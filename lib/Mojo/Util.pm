@@ -37,6 +37,9 @@ $REVERSE{$ENTITIES{$_}} //= $_
   for sort { @{[$a =~ /[A-Z]/g]} <=> @{[$b =~ /[A-Z]/g]} }
   sort grep {/;/} keys %ENTITIES;
 
+# Encoding cache
+my %ENCODING;
+
 our @EXPORT_OK = (
   qw(b64_decode b64_encode camelize class_to_file class_to_path decamelize),
   qw(decode encode get_line hmac_md5_sum hmac_sha1_sum html_escape),
@@ -88,11 +91,11 @@ sub decamelize {
 sub decode {
   my ($encoding, $bytes) = @_;
   return undef
-    unless eval { $bytes = Encode::decode($encoding, $bytes, 1); 1 };
+    unless eval { $bytes = _encoding($encoding)->decode("$bytes", 1); 1 };
   return $bytes;
 }
 
-sub encode { Encode::encode(shift, shift) }
+sub encode { _encoding($_[0])->encode("$_[1]") }
 
 sub get_line {
 
@@ -369,6 +372,8 @@ sub _decode {
 sub _encode {
   return exists $REVERSE{$_[0]} ? "&$REVERSE{$_[0]}" : "&#@{[ord($_[0])]};";
 }
+
+sub _encoding { $ENCODING{$_[0]} //= Encode::find_encoding($_[0]) }
 
 sub _hmac {
   my ($hash, $string, $secret) = @_;

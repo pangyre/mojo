@@ -91,10 +91,11 @@ Mojo::Collection - Collection
   use Mojo::Collection;
   my $collection = Mojo::Collection->new(qw(just works));
   unshift @$collection, 'it';
-  $collection->map(sub { ucfirst })->each(sub {
-    my ($word, $count) = @_;
-    say "$count: $word";
-  });
+  $collection->map(sub { ucfirst })->each(
+    sub {
+      my ($word, $count) = @_;
+      say "$count: $word";
+    });
 
   # Use the alternative constructor
   use Mojo::Collection 'c';
@@ -132,10 +133,11 @@ Construct a new array-based L<Mojo::Collection> object.
 
 Evaluate callback for each element in collection.
 
-  $collection->each(sub {
-    my ($e, $count) = @_;
-    say "$count: $e";
-  });
+  $collection->each(
+    sub {
+      my ($e, $count) = @_;
+      say "$count: $e";
+    });
 
 =head2 C<first>
 

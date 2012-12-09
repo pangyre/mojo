@@ -66,8 +66,7 @@ sub dispatch {
           endpoint => $endpoint,
           stack    => $m->stack,
           captures => $m->captures
-        }
-      ) unless $endpoint->has_conditions;
+        }) unless $endpoint->has_conditions;
     }
   }
 

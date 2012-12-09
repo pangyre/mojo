@@ -197,46 +197,52 @@ can emit the following new ones.
 
 =head2 C<request>
 
-  $tx->on(request => sub {
-    my $tx = shift;
-    ...
-  });
+  $tx->on(
+    request => sub {
+      my $tx = shift;
+      ...
+    });
 
 Emitted when a request is ready and needs to be handled.
 
-  $tx->on(request => sub {
-    my $tx = shift;
-    $tx->res->headers->header('X-Bender' => 'Bite my shiny metal ass!');
-  });
+  $tx->on(
+    request => sub {
+      my $tx = shift;
+      $tx->res->headers->header('X-Bender' => 'Bite my shiny metal ass!');
+    });
 
 =head2 C<unexpected>
 
-  $tx->on(unexpected => sub {
-    my ($tx, $res) = @_;
-    ...
-  });
+  $tx->on(
+    unexpected => sub {
+      my ($tx, $res) = @_;
+      ...
+    });
 
 Emitted for unexpected C<1xx> responses that will be ignored.
 
-  $tx->on(unexpected => sub {
-    my $tx = shift;
-    $tx->res->on(finish => sub { say 'Followup response is finished.' });
-  });
+  $tx->on(
+    unexpected => sub {
+      my $tx = shift;
+      $tx->res->on(finish => sub { say 'Followup response is finished.' });
+    });
 
 =head2 C<upgrade>
 
-  $tx->on(upgrade => sub {
-    my ($tx, $ws) = @_;
-    ...
-  });
+  $tx->on(
+    upgrade => sub {
+      my ($tx, $ws) = @_;
+      ...
+    });
 
 Emitted when transaction gets upgraded to a L<Mojo::Transaction::WebSocket>
 object.
 
-  $tx->on(upgrade => sub {
-    my ($tx, $ws) = @_;
-    $ws->res->headers->header('X-Bender' => 'Bite my shiny metal ass!');
-  });
+  $tx->on(
+    upgrade => sub {
+      my ($tx, $ws) = @_;
+      $ws->res->headers->header('X-Bender' => 'Bite my shiny metal ass!');
+    });
 
 =head1 ATTRIBUTES
 

@@ -323,10 +323,11 @@ with the router attribute L<Mojolicious::Routes/"namespace">.
 The C<cb> stash value, which won't be inherited by nested routes, can be used
 to bypass controllers and execute a callback instead.
 
-  $r->route('/bye')->to(cb => sub {
-    my $self = shift;
-    $self->render(text => 'Good bye.');
-  });
+  $r->route('/bye')->to(
+    cb => sub {
+      my $self = shift;
+      $self->render(text => 'Good bye.');
+    });
 
 This technique is the foundation of L<Mojolicious::Lite>, you can learn more
 about it from the included tutorial.
@@ -505,10 +506,11 @@ additional information.
   # Action
   sub echo {
     my $self = shift;
-    $self->on(message => sub {
-      my ($self, $msg) = @_;
-      $self->send("echo: $msg");
-    });
+    $self->on(
+      message => sub {
+        my ($self, $msg) = @_;
+        $self->send("echo: $msg");
+      });
   }
 
   1;
@@ -531,16 +533,17 @@ be broken, this makes bridges a very powerful tool for authentication.
   # /foo     -> undef
   # /foo/bar -> {cb => sub {...}}
   #             {controller => 'foo', action => 'bar'}
-  my $foo = $r->bridge('/foo')->to(cb => sub {
-    my $self = shift;
+  my $foo = $r->bridge('/foo')->to(
+    cb => sub {
+      my $self = shift;
 
-    # Authenticated
-    return 1 if $self->req->headers->header('X-Bender');
+      # Authenticated
+      return 1 if $self->req->headers->header('X-Bender');
 
-    # Not authenticated
-    $self->render(text => "You're not Bender.");
-    return undef;
-  });
+      # Not authenticated
+      $self->render(text => "You're not Bender.");
+      return undef;
+    });
   $foo->route('/bar')->to(controller => 'foo', action => 'bar');
 
 =head2 More convenient routes
@@ -572,24 +575,27 @@ This makes the process of growing your L<Mojolicious::Lite> prototypes into
 full L<Mojolicious> applications very straightforward.
 
   # POST /bar
-  $r->post('/bar' => sub {
-    my $self = shift;
-    $self->render(text => 'Just like a Mojolicious::Lite action.');
-  });
+  $r->post(
+    '/bar' => sub {
+      my $self = shift;
+      $self->render(text => 'Just like a Mojolicious::Lite action.');
+    });
 
 Even the more abstract concepts are available.
 
   # GET  /yada
   # POST /yada
   my $yada = $r->under('/yada');
-  $yada->get(sub {
-    my $self = shift;
-    $self->render(text => 'Hello.');
-  });
-  $yada->post(sub {
-    my $self = shift;
-    $self->render(text => 'Go away.');
-  });
+  $yada->get(
+    sub {
+      my $self = shift;
+      $self->render(text => 'Hello.');
+    });
+  $yada->post(
+    sub {
+      my $self = shift;
+      $self->render(text => 'Go away.');
+    });
 
 =head2 Hooks
 
@@ -605,11 +611,12 @@ which makes them a very powerful tool especially for plugins.
     my $self = shift;
 
     # Check all requests for a "/test" prefix
-    $self->hook(before_dispatch => sub {
-      my $self = shift;
-      $self->render(text => 'This request did not reach the router.')
-        if $self->req->url->path->contains('/test');
-    });
+    $self->hook(
+      before_dispatch => sub {
+        my $self = shift;
+        $self->render(text => 'This request did not reach the router.')
+          if $self->req->url->path->contains('/test');
+      });
 
     # These will not be reached if the hook above renders a response
     my $r = $self->routes;
@@ -623,20 +630,22 @@ Post-processing tasks such as setting additional response headers are a very
 common use.
 
   # Make sure static files are cached
-  $self->hook(after_static_dispatch => sub {
-    my $self = shift;
-    $self->res->headers->cache_control('max-age=3600, must-revalidate')
-      if $self->res->code;
-  });
+  $self->hook(
+    after_static_dispatch => sub {
+      my $self = shift;
+      $self->res->headers->cache_control('max-age=3600, must-revalidate')
+        if $self->res->code;
+    });
 
 Same for monitoring tasks.
 
   # Forward exceptions to a web service
-  $self->hook(after_dispatch => sub {
-    my $self = shift;
-    return unless my $e = $self->stash('exception');
-    $self->ua->post_form('https://kraih.com/bugs' => {exception => $e});
-  });
+  $self->hook(
+    after_dispatch => sub {
+      my $self = shift;
+      return unless my $e = $self->stash('exception');
+      $self->ua->post_form('https://kraih.com/bugs' => {exception => $e});
+    });
 
 For a full list of available hooks see L<Mojolicious/"hook">.
 
@@ -645,20 +654,21 @@ For a full list of available hooks see L<Mojolicious/"hook">.
 You can also add your own shortcuts to make route generation more expressive.
 
   # Simple "resource" shortcut
-  $r->add_shortcut(resource => sub {
-    my ($r, $name) = @_;
+  $r->add_shortcut(
+    resource => sub {
+      my ($r, $name) = @_;
 
-    # Generate "/$name" route
-    my $resource = $r->route("/$name")->to("$name#");
+      # Generate "/$name" route
+      my $resource = $r->route("/$name")->to("$name#");
 
-    # Handle POST requests
-    $resource->post->to('#create')->name("create_$name");
+      # Handle POST requests
+      $resource->post->to('#create')->name("create_$name");
 
-    # Handle GET requests
-    $resource->get->to('#show')->name("show_$name");
+      # Handle GET requests
+      $resource->get->to('#show')->name("show_$name");
 
-    return $resource;
-  });
+      return $resource;
+    });
 
   # POST /user -> {controller => 'user', action => 'create'}
   # GET  /user -> {controller => 'user', action => 'show'}

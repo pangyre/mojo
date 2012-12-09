@@ -48,8 +48,7 @@ $loop->server(
     $stream->write('test' => sub { shift->write('321') });
     $stream->on(close => sub { $delay->end });
     $stream->on(read => sub { $server .= pop });
-  }
-);
+  });
 $delay->begin;
 $loop->client(
   {port => $port, tls => 1} => sub {
@@ -58,8 +57,7 @@ $loop->client(
     $stream->on(close => sub { $delay->end });
     $stream->on(read => sub { $client .= pop });
     $stream->timeout(0.5);
-  }
-);
+  });
 $delay->wait;
 is $server, 'tset123', 'right content';
 is $client, 'test321', 'right content';
@@ -87,13 +85,11 @@ Mojo::IOLoop->server(
       close => sub {
         $server_close++;
         $delay->end;
-      }
-    );
+      });
     $stream->on(error => sub { $server_err = pop });
     $stream->on(read => sub { $server .= pop });
     $stream->timeout(0.5);
-  }
-);
+  });
 $delay->begin;
 Mojo::IOLoop->client(
   port     => $port,
@@ -107,11 +103,9 @@ Mojo::IOLoop->client(
       close => sub {
         $client_close++;
         $delay->end;
-      }
-    );
+      });
     $stream->on(read => sub { $client .= pop });
-  }
-);
+  });
 $delay->wait;
 is $server,       'tset123', 'right content';
 is $client,       'test321', 'right content';
@@ -132,8 +126,7 @@ Mojo::IOLoop->client(
   sub {
     shift->stop;
     $client_err = shift;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok $client_err, 'has error';
 
@@ -143,8 +136,7 @@ Mojo::IOLoop->client(
   {port => $port, tls => 1} => sub {
     shift->stop;
     $client_err = shift;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok !$server_err, 'no error';
 ok $client_err, 'has error';
@@ -160,8 +152,7 @@ $loop->server(
   tls_ca   => 'no cert',
   tls_cert => 't/mojo/certs/server.crt',
   tls_key  => 't/mojo/certs/server.key',
-  sub { $server_err = 'accepted' }
-);
+  sub { $server_err = 'accepted' });
 $loop->client(
   port     => $port,
   tls      => 1,
@@ -170,8 +161,7 @@ $loop->client(
   sub {
     shift->stop;
     $client_err = shift;
-  }
-);
+  });
 $loop->start;
 ok !$server_err, 'no error';
 ok $client_err, 'has error';
@@ -197,12 +187,10 @@ Mojo::IOLoop->server(
       close => sub {
         $server_close++;
         $delay->end;
-      }
-    );
+      });
     $stream->on(error => sub { $server_err = pop });
     $stream->on(read => sub { $server .= pop });
-  }
-);
+  });
 $delay->begin;
 Mojo::IOLoop->client(
   port     => $port,
@@ -218,12 +206,10 @@ Mojo::IOLoop->client(
       close => sub {
         $client_close++;
         $delay->end;
-      }
-    );
+      });
     $stream->on(read => sub { $client .= pop });
     $stream->timeout(0.5);
-  }
-);
+  });
 $delay->wait;
 is $server,       'tset123', 'right content';
 is $client,       'test321', 'right content';
@@ -243,8 +229,7 @@ $loop->server(
   tls      => 1,
   tls_cert => 't/mojo/certs/badclient.crt',
   tls_key  => 't/mojo/certs/badclient.key',
-  sub { $server_err = 'accepted' }
-);
+  sub { $server_err = 'accepted' });
 $loop->client(
   port   => $port,
   tls    => 1,
@@ -252,8 +237,7 @@ $loop->client(
   sub {
     shift->stop;
     $client_err = shift;
-  }
-);
+  });
 $loop->start;
 ok !$server_err, 'no error';
 ok $client_err, 'has error';
@@ -268,8 +252,7 @@ $loop->server(
   tls      => 1,
   tls_cert => 't/mojo/certs/server.crt',
   tls_key  => 't/mojo/certs/server.key',
-  sub { $server_err = 'accepted' }
-);
+  sub { $server_err = 'accepted' });
 $loop->client(
   address => '127.0.0.1',
   port    => $port,
@@ -278,8 +261,7 @@ $loop->client(
   sub {
     shift->stop;
     $client_err = shift;
-  }
-);
+  });
 $loop->start;
 ok !$server_err, 'no error';
 ok $client_err, 'has error';
@@ -294,8 +276,7 @@ $loop->server(
   tls      => 1,
   tls_cert => 't/mojo/certs/badclient.crt',
   tls_key  => 't/mojo/certs/badclient.key',
-  sub { $server_err = 'accepted' }
-);
+  sub { $server_err = 'accepted' });
 $loop->client(
   port   => $port,
   tls    => 1,
@@ -303,8 +284,7 @@ $loop->client(
   sub {
     shift->stop;
     $client_err = shift;
-  }
-);
+  });
 $loop->start;
 ok !$server_err, 'no error';
 ok $client_err, 'has error';
@@ -325,8 +305,7 @@ $loop->server(
     my ($loop, $stream) = @_;
     $stream->on(close => sub { $loop->stop });
     $server = 'accepted';
-  }
-);
+  });
 $loop->client(
   port     => $port,
   tls      => 1,
@@ -337,8 +316,7 @@ $loop->client(
     $stream->timeout(0.5);
     $client_err = $err;
     $client     = 'connected';
-  }
-);
+  });
 $loop->start;
 is $server, 'accepted',  'right result';
 is $client, 'connected', 'right result';

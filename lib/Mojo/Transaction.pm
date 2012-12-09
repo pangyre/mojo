@@ -105,28 +105,31 @@ L<Mojo::Transaction> can emit the following events.
 
 =head2 C<connection>
 
-  $tx->on(connection => sub {
-    my ($tx, $connection) = @_;
-    ...
-  });
+  $tx->on(
+    connection => sub {
+      my ($tx, $connection) = @_;
+      ...
+    });
 
 Emitted when a connection has been assigned to transaction.
 
 =head2 C<finish>
 
-  $tx->on(finish => sub {
-    my $tx = shift;
-    ...
-  });
+  $tx->on(
+    finish => sub {
+      my $tx = shift;
+      ...
+    });
 
 Emitted when transaction is finished.
 
 =head2 C<resume>
 
-  $tx->on(resume => sub {
-    my $tx = shift;
-    ...
-  });
+  $tx->on(
+    resume => sub {
+      my $tx = shift;
+      ...
+    });
 
 Emitted when transaction is resumed.
 

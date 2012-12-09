@@ -296,14 +296,16 @@ Mojo::Transaction::WebSocket - WebSocket transaction
   # Send and receive WebSocket messages
   my $ws = Mojo::Transaction::WebSocket->new;
   $ws->send('Hello World!');
-  $ws->on(message => sub {
-    my ($ws, $msg) = @_;
-    say "Message: $msg";
-  });
-  $ws->on(finish => sub {
-    my $ws = shift;
-    say 'WebSocket closed.';
-  });
+  $ws->on(
+    message => sub {
+      my ($ws, $msg) = @_;
+      say "Message: $msg";
+    });
+  $ws->on(
+    finish => sub {
+      my $ws = shift;
+      say 'WebSocket closed.';
+    });
 
 =head1 DESCRIPTION
 
@@ -318,51 +320,57 @@ and can emit the following new ones.
 
 =head2 C<drain>
 
-  $ws->on(drain => sub {
-    my $ws = shift;
-    ...
-  });
+  $ws->on(
+    drain => sub {
+      my $ws = shift;
+      ...
+    });
 
 Emitted once all data has been sent.
 
-  $ws->on(drain => sub {
-    my $ws = shift;
-    $ws->send(time);
-  });
+  $ws->on(
+    drain => sub {
+      my $ws = shift;
+      $ws->send(time);
+    });
 
 =head2 C<frame>
 
-  $ws->on(frame => sub {
-    my ($ws, $frame) = @_;
-    ...
-  });
+  $ws->on(
+    frame => sub {
+      my ($ws, $frame) = @_;
+      ...
+    });
 
 Emitted when a WebSocket frame has been received.
 
   $ws->unsubscribe('frame');
-  $ws->on(frame => sub {
-    my ($ws, $frame) = @_;
-    say "FIN: $frame->[0]";
-    say "RSV1: $frame->[1]";
-    say "RSV2: $frame->[2]";
-    say "RSV3: $frame->[3]";
-    say "Opcode: $frame->[4]";
-    say "Payload: $frame->[5]";
-  });
+  $ws->on(
+    frame => sub {
+      my ($ws, $frame) = @_;
+      say "FIN: $frame->[0]";
+      say "RSV1: $frame->[1]";
+      say "RSV2: $frame->[2]";
+      say "RSV3: $frame->[3]";
+      say "Opcode: $frame->[4]";
+      say "Payload: $frame->[5]";
+    });
 
 =head2 C<message>
 
-  $ws->on(message => sub {
-    my ($ws, $msg) = @_;
-    ...
-  });
+  $ws->on(
+    message => sub {
+      my ($ws, $msg) = @_;
+      ...
+    });
 
 Emitted when a complete WebSocket message has been received.
 
-  $ws->on(message => sub {
-    my ($ws, $msg) = @_;
-    say "Message: $msg";
-  });
+  $ws->on(
+    message => sub {
+      my ($ws, $msg) = @_;
+      say "Message: $msg";
+    });
 
 =head1 ATTRIBUTES
 

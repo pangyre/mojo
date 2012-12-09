@@ -34,8 +34,7 @@ sub startup {
     test => sub {
       my ($self, $c, $output) = @_;
       $$output = 'Hello Mojo from a templateless renderer!';
-    }
-  );
+    });
 
   # Renderer for a different file extension
   $self->renderer->add_handler(xpl => $self->renderer->handlers->{epl});
@@ -45,8 +44,7 @@ sub startup {
     fun => sub {
       my ($r, $append) = @_;
       $r->route("/fun$append");
-    }
-  );
+    });
 
   # Session
   $self->sessions->cookie_domain('.example.com');
@@ -76,8 +74,7 @@ sub startup {
     cb => sub {
       return 1 if shift->req->headers->header('X-Bender');
       return undef;
-    }
-  );
+    });
 
   # /auth/authenticated
   $auth->route('/authenticated')->to('foo#authenticated');

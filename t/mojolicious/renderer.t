@@ -19,8 +19,7 @@ $r->add_handler(
   debug => sub {
     my ($self, $c, $output) = @_;
     $$output .= 'Hello Mojo!';
-  }
-);
+  });
 
 # Normal rendering with custom format
 $c->stash->{template} = 'something';

@@ -25,8 +25,7 @@ get sub {
   $self->respond_to(
     json => sub { $self->render_json({just => 'works'}) },
     html => sub { $self->render_data('<html><body>works') },
-    xml  => sub { $self->render_data('<just>works</just>') }
-  );
+    xml  => sub { $self->render_data('<just>works</just>') });
 };
 
 # POST
@@ -36,8 +35,7 @@ post sub {
     json => {json => {just => 'works too'}},
     html => {text => '<html><body>works too'},
     xml  => {data => '<just>works too</just>'},
-    any => {text => 'works too', status => 201}
-  );
+    any => {text => 'works too', status => 201});
 };
 
 my $t = Test::Mojo->new;

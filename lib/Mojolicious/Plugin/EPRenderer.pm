@@ -50,8 +50,7 @@ sub register {
 
       # Render with "epl" handler
       return $renderer->handlers->{epl}->($renderer, $c, $output, $options);
-    }
-  );
+    });
 
   # Set default handler
   $app->renderer->default_handler('ep');

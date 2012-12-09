@@ -79,21 +79,22 @@ Mojo::Server::CGI - CGI server
 
   my $cgi = Mojo::Server::CGI->new;
   $cgi->unsubscribe('request')
-  $cgi->on(request => sub {
-    my ($cgi, $tx) = @_;
+  $cgi->on(
+    request => sub {
+      my ($cgi, $tx) = @_;
 
-    # Request
-    my $method = $tx->req->method;
-    my $path   = $tx->req->url->path;
+      # Request
+      my $method = $tx->req->method;
+      my $path   = $tx->req->url->path;
 
-    # Response
-    $tx->res->code(200);
-    $tx->res->headers->content_type('text/plain');
-    $tx->res->body("$method request for $path!");
+      # Response
+      $tx->res->code(200);
+      $tx->res->headers->content_type('text/plain');
+      $tx->res->body("$method request for $path!");
 
-    # Resume transaction
-    $tx->resume;
-  });
+      # Resume transaction
+      $tx->resume;
+    });
   $cgi->run;
 
 =head1 DESCRIPTION

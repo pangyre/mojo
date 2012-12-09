@@ -20,8 +20,7 @@ websocket '/echo' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send("echo: $msg");
-    }
-  );
+    });
 };
 
 # GET /echo
@@ -44,8 +43,7 @@ websocket '/unicode' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send("♥: $msg");
-    }
-  );
+    });
 };
 
 # WebSocket /bytes
@@ -55,8 +53,7 @@ websocket '/bytes' => sub {
     frame => sub {
       my ($ws, $frame) = @_;
       $ws->send({$frame->[4] == 2 ? 'binary' : 'text', $frame->[5]});
-    }
-  );
+    });
   $self->rendered(101);
 };
 
@@ -67,14 +64,12 @@ websocket '/once' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send("ONE: $msg");
-    }
-  );
+    });
   $self->tx->once(
     message => sub {
       my ($tx, $msg) = @_;
       $self->send("TWO: $msg");
-    }
-  );
+    });
 };
 
 # /nested
@@ -87,8 +82,7 @@ websocket sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send("nested echo: $msg");
-    }
-  );
+    });
 };
 
 # GET /nested
@@ -162,8 +156,7 @@ $t->tx->on(
   frame => sub {
     my ($ws, $frame) = @_;
     $binary++ if $frame->[4] == 2;
-  }
-);
+  });
 $t->send_ok({binary => $bytes})->message_is($bytes);
 ok $binary, 'received binary frame';
 $binary = undef;

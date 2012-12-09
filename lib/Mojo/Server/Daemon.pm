@@ -108,15 +108,13 @@ sub _build_tx {
       my ($tx, $ws) = @_;
       $ws->server_handshake;
       $self->{connections}{$id}{ws} = $ws;
-    }
-  );
+    });
   $tx->on(
     request => sub {
       my $tx = shift;
       $self->emit(request => $self->{connections}{$id}{ws} || $tx);
       $tx->on(resume => sub { $self->_write($id) });
-    }
-  );
+    });
 
   # Kept alive if we have more than one request on the connection
   $tx->kept_alive(1) if ++$c->{requests} > 1;
@@ -182,8 +180,7 @@ sub _listen {
     port     => $url->port,
     tls_ca   => scalar $query->param('ca'),
     tls_cert => scalar $query->param('cert'),
-    tls_key  => scalar $query->param('key')
-  };
+    tls_key  => scalar $query->param('key')};
   my $verify = $query->param('verify');
   $options->{tls_verify} = hex $verify if defined $verify;
   delete $options->{address} if $options->{address} eq '*';
@@ -209,13 +206,11 @@ sub _listen {
           return unless $self;
           $self->app->log->error(pop);
           $self->_close($id);
-        }
-      );
+        });
       $stream->on(read => sub { $self->_read($id => pop) });
       $stream->on(timeout =>
           sub { $self->app->log->debug('Inactivity timeout.') if $c->{tx} });
-    }
-  );
+    });
   push @{$self->{acceptors} ||= []}, $id;
 
   # Friendly message
@@ -295,21 +290,22 @@ Mojo::Server::Daemon - Non-blocking I/O HTTP and WebSocket server
 
   my $daemon = Mojo::Server::Daemon->new(listen => ['http://*:8080']);
   $daemon->unsubscribe('request');
-  $daemon->on(request => sub {
-    my ($daemon, $tx) = @_;
+  $daemon->on(
+    request => sub {
+      my ($daemon, $tx) = @_;
 
-    # Request
-    my $method = $tx->req->method;
-    my $path   = $tx->req->url->path;
+      # Request
+      my $method = $tx->req->method;
+      my $path   = $tx->req->url->path;
 
-    # Response
-    $tx->res->code(200);
-    $tx->res->headers->content_type('text/plain');
-    $tx->res->body("$method request for $path!");
+      # Response
+      $tx->res->code(200);
+      $tx->res->headers->content_type('text/plain');
+      $tx->res->body("$method request for $path!");
 
-    # Resume transaction
-    $tx->resume;
-  });
+      # Resume transaction
+      $tx->resume;
+    });
   $daemon->run;
 
 =head1 DESCRIPTION

@@ -48,35 +48,29 @@ Mojo::IOLoop->server(
                   read => sub {
                     my ($stream, $chunk) = @_;
                     Mojo::IOLoop->stream($client)->write($chunk);
-                  }
-                );
+                  });
 
                 # Server closed connection
                 $stream->on(
                   close => sub {
                     Mojo::IOLoop->remove($client);
                     delete $buffer{$client};
-                  }
-                );
-              }
-            );
+                  });
+              });
           }
         }
 
         # Invalid request from client
         else { Mojo::IOLoop->remove($client) }
-      }
-    );
+      });
 
     # Client closed connection
     $stream->on(
       close => sub {
         my $buffer = delete $buffer{$client};
         Mojo::IOLoop->remove($buffer->{connection}) if $buffer->{connection};
-      }
-    );
-  }
-) or die "Couldn't create listen socket!\n";
+      });
+  }) or die "Couldn't create listen socket!\n";
 
 print <<'EOF';
 Starting connect proxy on port 3000.

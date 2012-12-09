@@ -48,8 +48,7 @@ get '/bye' => sub {
     '/hello/hello' => sub {
       my $tx = pop;
       $self->render_text($tx->res->body . "$name! $nb");
-    }
-  );
+    });
   $nb .= 'success!';
 };
 

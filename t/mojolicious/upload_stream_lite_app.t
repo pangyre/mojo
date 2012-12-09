@@ -18,8 +18,7 @@ hook after_build_tx => sub {
   $tx->req->content->on(
     upgrade => sub {
       $tx->emit('request') if $tx->req->url->path->contains('/upload');
-    }
-  );
+    });
 };
 
 # POST /upload/*
@@ -38,10 +37,8 @@ post '/upload/:id' => sub {
           return unless $single->headers->content_disposition =~ /my_file/;
           $single->unsubscribe('read');
           $single->on(read => sub { $cache{$id} .= pop });
-        }
-      );
-    }
-  );
+        });
+    });
   return unless $self->req->is_finished;
 
   # Second invocation, render response

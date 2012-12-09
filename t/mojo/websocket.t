@@ -43,8 +43,7 @@ websocket '/' => sub {
       my $url = $self->url_for->to_abs;
       $self->send("${msg}test2$url");
       $server = 1;
-    }
-  );
+    });
 } => 'index';
 
 # GET /something/else
@@ -63,8 +62,7 @@ websocket '/socket' => sub {
       my $self = shift;
       $self->send(Mojo::IOLoop->stream($self->tx->connection)->timeout);
       $self->finish;
-    }
-  );
+    });
 };
 
 # WebSocket /early_start
@@ -75,8 +73,7 @@ websocket '/early_start' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send("${msg}test2")->finish;
-    }
-  );
+    });
 };
 
 # WebSocket /denied
@@ -101,11 +98,9 @@ websocket '/subreq' => sub {
           $self->send($msg);
           $tx->finish;
           $self->finish;
-        }
-      );
+        });
       $tx->send('test1');
-    }
-  );
+    });
   $self->send('test0');
   $self->on(finish => sub { $subreq += 1 });
 };
@@ -117,8 +112,7 @@ websocket '/echo' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send($msg);
-    }
-  );
+    });
 };
 
 # WebSocket /double_echo
@@ -128,8 +122,7 @@ websocket '/double_echo' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send($msg => sub { shift->send($msg) });
-    }
-  );
+    });
 };
 
 # WebSocket /dead
@@ -176,11 +169,9 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->finish;
-      }
-    );
+      });
     $tx->send('test1');
-  }
-);
+  });
 $loop->start;
 like $result, qr!test1test2ws://localhost:\d+/!, 'right result';
 
@@ -193,8 +184,7 @@ $ua->websocket(
     $code = $tx->res->code;
     $body = $tx->res->body;
     $loop->stop;
-  }
-);
+  });
 $loop->start;
 ok !$ws, 'not a WebSocket';
 is $code, 426, 'right code';
@@ -221,11 +211,9 @@ $ua->start(
         my ($tx, $msg) = @_;
         $tx->finish if length $result;
         $result .= $msg;
-      }
-    );
+      });
     $local = $loop->stream($tx->connection)->handle->sockport;
-  }
-);
+  });
 $loop->start;
 is $finished, 1, 'finish event has been emitted';
 is $early,    1, 'finish event has been emitted at the right time';
@@ -244,18 +232,15 @@ $ua->websocket(
       finish => sub {
         $client += 2;
         $loop->stop;
-      }
-    );
+      });
     $tx->on(
       message => sub {
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->send('test3');
         $client = 1;
-      }
-    );
-  }
-);
+      });
+  });
 $loop->start;
 is $result, 'test3test2', 'right result';
 is $client, 3,            'finish event has been emitted';
@@ -266,8 +251,7 @@ $ua->websocket(
   '/denied' => sub {
     $code = pop->res->code;
     $loop->stop;
-  }
-);
+  });
 $loop->start;
 is $code,      403, 'right status';
 is $handshake, 1,   'finished handshake';
@@ -285,16 +269,13 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result .= $msg;
         $tx->finish if $msg eq 'test1';
-      }
-    );
+      });
     $tx->on(
       finish => sub {
         $finished += 4;
         $loop->stop;
-      }
-    );
-  }
-);
+      });
+  });
 $loop->start;
 is $code,     101,          'right status';
 is $result,   'test0test1', 'right result';
@@ -316,16 +297,13 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result .= $msg;
         $tx->finish if $msg eq 'test1';
-      }
-    );
+      });
     $tx->on(
       finish => sub {
         $finished += 1;
         $delay->end;
-      }
-    );
-  }
-);
+      });
+  });
 $delay->begin;
 $ua->websocket(
   '/subreq' => sub {
@@ -336,16 +314,13 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result2 .= $msg;
         $tx->finish if $msg eq 'test1';
-      }
-    );
+      });
     $tx->on(
       finish => sub {
         $finished += 2;
         $delay->end;
-      }
-    );
-  }
-);
+      });
+  });
 $delay->wait;
 is $code,     101,          'right status';
 is $result,   'test0test1', 'right result';
@@ -365,25 +340,21 @@ $ua->websocket(
       finish => sub {
         $client += 2;
         $loop->stop;
-      }
-    );
+      });
     $tx->on(
       message => sub {
         my ($tx, $msg) = @_;
         $result .= $msg;
         $tx->finish if ++$counter == 2;
-      }
-    );
+      });
     $client = 1;
     $tx->send(
       'hi!' => sub {
         shift->send('there!');
         $drain
           += @{Mojo::IOLoop->stream($tx->connection)->subscribers('drain')};
-      }
-    );
-  }
-);
+      });
+  });
 $loop->start;
 is $result, 'hi!there!', 'right result';
 is $client, 3,           'finish event has been emitted';
@@ -399,19 +370,16 @@ $ua->websocket(
       finish => sub {
         $client += 2;
         $loop->stop;
-      }
-    );
+      });
     $tx->on(
       message => sub {
         my ($tx, $msg) = @_;
         $result .= $msg;
         $tx->finish if ++$counter == 2;
-      }
-    );
+      });
     $client = 1;
     $tx->send('hi!');
-  }
-);
+  });
 $loop->start;
 is $result, 'hi!hi!', 'right result';
 is $client, 3,        'finish event has been emitted';
@@ -427,8 +395,7 @@ $ua->websocket(
     $code      = $tx->res->code;
     $msg       = $tx->res->message;
     $loop->stop;
-  }
-);
+  });
 $loop->start;
 ok $finished, 'transaction is finished';
 ok !$websocket, 'no websocket';
@@ -444,8 +411,7 @@ $ua->websocket(
     $code      = $tx->res->code;
     $msg       = $tx->res->message;
     $loop->stop;
-  }
-);
+  });
 $loop->start;
 ok !$websocket, 'no websocket';
 is $code, 403,            'right status';
@@ -456,8 +422,7 @@ $ua->websocket(
   '/deadcallback' => sub {
     pop->send('test1');
     $loop->stop;
-  }
-);
+  });
 $loop->start;
 
 # WebSocket /echo (16bit length)
@@ -471,11 +436,9 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->finish;
-      }
-    );
+      });
     $tx->send('hi!' x 100);
-  }
-);
+  });
 $loop->start;
 is $result, 'hi!' x 100, 'right result';
 
@@ -485,8 +448,7 @@ $msg = app->log->on(message => sub { $log .= pop });
 $ua->websocket(
   '/timeout' => sub {
     pop->on(finish => sub { Mojo::IOLoop->stop });
-  }
-);
+  });
 Mojo::IOLoop->start;
 app->log->unsubscribe(message => $msg);
 is $timeout, 'works!', 'finish event has been emitted';
@@ -502,11 +464,9 @@ $ua->websocket(
         my ($tx, $frame) = @_;
         $pong = $frame->[5] if $frame->[4] == 10;
         Mojo::IOLoop->stop;
-      }
-    );
+      });
     $tx->send([1, 0, 0, 0, 9, 'test']);
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $pong, 'test', 'received pong with payload';
 

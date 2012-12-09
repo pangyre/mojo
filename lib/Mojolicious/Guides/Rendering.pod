@@ -652,10 +652,11 @@ applications, plugins make that very simple.
 
   sub register {
     my ($self, $app) = @_;
-    $app->helper(debug => sub {
-      my ($self, $string) = @_;
-      $self->app->log->debug($string);
-    });
+    $app->helper(
+      debug => sub {
+        my ($self, $string) = @_;
+        $self->app->log->debug($string);
+      });
   }
 
   1;
@@ -798,10 +799,11 @@ common use would be to send the C<head> section of an HTML document to the
 browser in advance and speed up preloading of referenced images and
 stylesheets.
 
-  $self->write_chunk('<html><head><title>Example</title></head>' => sub {
-    my $self = shift;
-    $self->finish('<body>Example</body></html>');
-  });
+  $self->write_chunk(
+    '<html><head><title>Example</title></head>' => sub {
+      my $self = shift;
+      $self->finish('<body>Example</body></html>');
+    });
 
 The optional drain callback ensures that all previous chunks have been
 written before processing continues. An empty chunk or call to

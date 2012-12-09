@@ -226,18 +226,20 @@ emit the following new ones.
 
 =head2 C<part>
 
-  $multi->on(part => sub {
-    my ($multi, $single) = @_;
-    ...
-  });
+  $multi->on(
+    part => sub {
+      my ($multi, $single) = @_;
+      ...
+    });
 
 Emitted when a new L<Mojo::Content::Single> part starts.
 
-  $multi->on(part => sub {
-    my ($multi, $single) = @_;
-    return unless $single->headers->content_disposition =~ /name="([^"]+)"/;
-    say "Field: $1";
-  });
+  $multi->on(
+    part => sub {
+      my ($multi, $single) = @_;
+      return unless $single->headers->content_disposition =~ /name="([^"]+)"/;
+      say "Field: $1";
+    });
 
 =head1 ATTRIBUTES
 

@@ -297,13 +297,13 @@ Actual endpoint for transaction.
   my $tx = $t->form('http://kraih.com' => {a => [qw(b c d)]});
   my $tx = $t->form('http://kraih.com' => {mytext => {file => '/foo.txt'}});
   my $tx = $t->form('http://kraih.com' => {mytext => {content => 'lalala'}});
-  my $tx = $t->form('http://kraih.com' => {
-    myzip => {
-      file     => Mojo::Asset::Memory->new->add_chunk('lalala'),
-      filename => 'foo.zip',
-      DNT      => 1
-    }
-  });
+  my $tx = $t->form(
+    'http://kraih.com' => {
+      myzip => {
+        file     => Mojo::Asset::Memory->new->add_chunk('lalala'),
+        filename => 'foo.zip',
+        DNT      => 1
+      }});
   my $tx = $t->form('http://kraih.com' => 'UTF-8' => {a => 'b'});
   my $tx = $t->form('http://kraih.com' => {a => 'b'} => {DNT => 1});
   my $tx = $t->form('http://kraih.com', 'UTF-8', {a => 'b'}, {DNT => 1});

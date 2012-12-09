@@ -514,28 +514,31 @@ actual action code needs to be changed.
 
     my $r = $self->routes;
 
-    $r->any('/' => sub {
-      my $self = shift;
+    $r->any(
+      '/' => sub {
+        my $self = shift;
 
-      my $user = $self->param('user') || '';
-      my $pass = $self->param('pass') || '';
-      return $self->render unless $self->users->check($user, $pass);
+        my $user = $self->param('user') || '';
+        my $pass = $self->param('pass') || '';
+        return $self->render unless $self->users->check($user, $pass);
 
-      $self->session(user => $user);
-      $self->flash(message => 'Thanks for logging in.');
-      $self->redirect_to('protected');
-    } => 'index');
+        $self->session(user => $user);
+        $self->flash(message => 'Thanks for logging in.');
+        $self->redirect_to('protected');
+      } => 'index');
 
-    $r->get('/protected' => sub {
-      my $self = shift;
-      return $self->redirect_to('index') unless $self->session('user');
-    });
+    $r->get(
+      '/protected' => sub {
+        my $self = shift;
+        return $self->redirect_to('index') unless $self->session('user');
+      });
 
-    $r->get('/logout' => sub {
-      my $self = shift;
-      $self->session(expires => 1);
-      $self->redirect_to('index');
-    });
+    $r->get(
+      '/logout' => sub {
+        my $self = shift;
+        $self->session(expires => 1);
+        $self->redirect_to('index');
+      });
   }
 
   1;

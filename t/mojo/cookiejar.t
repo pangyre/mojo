@@ -19,8 +19,7 @@ $jar->add(
     path   => '/',
     name   => 'just',
     value  => 'works'
-  )
-);
+  ));
 my @cookies = $jar->find(Mojo::URL->new('http://kraih.com/foo'));
 is $cookies[0]->name,  'foo',   'right name';
 is $cookies[0]->value, 'bar',   'right value';
@@ -63,8 +62,7 @@ $jar->add(
     path   => '/foo',
     name   => 'foo',
     value  => 'bar'
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://labs.kraih.com/foo'));
 is $cookies[0]->name,  'foo', 'right name';
 is $cookies[0]->value, 'bar', 'right value';
@@ -88,8 +86,7 @@ $jar->add(
     path   => '/foo',
     name   => 'bar',
     value  => 'baz'
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://localhost/foo'));
 is $cookies[0]->name,  'foo', 'right name';
 is $cookies[0]->value, 'bar', 'right value';
@@ -125,8 +122,7 @@ $jar->add(
     path   => '/foo',
     name   => 'bar',
     value  => 'baz'
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://kraih.com/foo'));
 is $cookies[0]->name,  'bar', 'right name';
 is $cookies[0]->value, 'baz', 'right value';
@@ -166,8 +162,7 @@ $jar->add(
     path   => '/foo',
     name   => 'huge',
     value  => 'x' x 1025
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://kraih.com/foo'));
 is $cookies[0]->name,  'small', 'right name';
 is $cookies[0]->value, 'x',     'right value';
@@ -190,8 +185,7 @@ $jar->add(
     name    => 'baz',
     value   => '24',
     max_age => -1
-  )
-);
+  ));
 my $expired = Mojo::Cookie::Response->new(
   domain => 'labs.kraih.com',
   path   => '/',
@@ -224,8 +218,7 @@ $jar->add(
     path   => '/',
     name   => 'this',
     value  => 'that'
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://labs.kraih.com/fo'));
 is $cookies[0]->name,  'baz',  'right name';
 is $cookies[0]->value, 'yada', 'right value';
@@ -249,8 +242,7 @@ $jar->add(
     path   => '/foo',
     name   => 'foo',
     value  => 'bar2'
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://kraih.com/foo'));
 is $cookies[0]->name,  'foo',  'right name';
 is $cookies[0]->value, 'bar2', 'right value';
@@ -265,8 +257,7 @@ $jar->add(
     name   => 'foo',
     value  => 'foo',
     secure => 1
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('https://kraih.com/foo'));
 is $cookies[0]->name,  'foo', 'right name';
 is $cookies[0]->value, 'foo', 'right value';
@@ -278,8 +269,7 @@ $jar->add(
     path   => '/foo',
     name   => 'foo',
     value  => 'bar'
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://kraih.com/foo'));
 is $cookies[0]->name,  'foo', 'right name';
 is $cookies[0]->value, 'bar', 'right value';
@@ -296,8 +286,7 @@ $jar->add(
     path   => '/foo(bar',
     name   => 'foo',
     value  => 'bar'
-  )
-);
+  ));
 @cookies = $jar->find(Mojo::URL->new('http://kraih.com/foo%28bar'));
 is $cookies[0]->name,  'foo', 'right name';
 is $cookies[0]->value, 'bar', 'right value';

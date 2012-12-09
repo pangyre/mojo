@@ -274,8 +274,7 @@ sub websocket_ok {
       $tx->on(finish => sub { $self->{finished} = 1 });
       $tx->on(message => sub { push @{$self->{messages}}, pop });
       Mojo::IOLoop->stop;
-    }
-  );
+    });
   Mojo::IOLoop->start;
 
   my $desc = encode 'UTF-8', "websocket $url";
@@ -389,10 +388,11 @@ User agent used for testing, defaults to a L<Mojo::UserAgent> object.
   $t->ua->max_redirects(10);
 
   # Customize all transactions (including followed redirects)
-  $t->ua->on(start => sub {
-    my ($ua, $tx) = @_;
-    $tx->req->headers->accept_language('en-US');
-  });
+  $t->ua->on(
+    start => sub {
+      my ($ua, $tx) = @_;
+      $tx->req->headers->accept_language('en-US');
+    });
 
   # Request with Basic authentication
   $t->get_ok($t->ua->app_url->userinfo('sri:secr3t')->path('/secrets'));
@@ -425,11 +425,12 @@ Access application with L<Mojo::UserAgent/"app">.
   ok $t->app->routes->find('echo')->is_websocket, 'WebSocket route';
 
   # Change application behavior
-  $t->app->hook(before_dispatch => sub {
-    my $self = shift;
-    $self->render(text => 'This request did not reach the router.')
-      if $self->req->url->path->contains('/user');
-  });
+  $t->app->hook(
+    before_dispatch => sub {
+      my $self = shift;
+      $self->render(text => 'This request did not reach the router.')
+        if $self->req->url->path->contains('/user');
+    });
 
   # Extract additional information
   my $stash;

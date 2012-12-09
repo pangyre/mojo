@@ -56,16 +56,13 @@ get '/longpoll' => sub {
       $self->write_chunk(
         'there,' => sub {
           shift->write_chunk(' whats up?' => sub { shift->finish });
-        }
-      );
-    }
-  );
+        });
+    });
   $self->on(
     finish => sub {
       Mojo::IOLoop->remove($id);
       $longpoll = 'finished!';
-    }
-  );
+    });
 };
 
 # GET /longpoll/nolength
@@ -81,10 +78,8 @@ get '/longpoll/nolength' => sub {
       $self->write(
         'there,' => sub {
           shift->write(' what length?' => sub { $self->finish });
-        }
-      );
-    }
-  );
+        });
+    });
 };
 
 # GET /longpoll/nested
@@ -98,8 +93,7 @@ get '/longpoll/nested' => sub {
   $self->write_chunk(
     sub {
       shift->write_chunk('nested!' => sub { shift->write_chunk('') });
-    }
-  );
+    });
 };
 
 # GET /longpoll/plain
@@ -114,8 +108,7 @@ get '/longpoll/plain' => sub {
     0.25 => sub {
       $self->on(finish => sub { $longpoll_plain = 'finished!' });
       $self->write('there plain,' => sub { shift->write(' whats up?') });
-    }
-  );
+    });
 };
 
 # GET /longpoll/delayed
@@ -133,10 +126,8 @@ get '/longpoll/delayed' => sub {
           my $self = shift;
           $self->write_chunk('how');
           $self->finish('dy!');
-        }
-      );
-    }
-  );
+        });
+    });
 };
 
 # GET /longpoll/plain/delayed
@@ -155,10 +146,8 @@ get '/longpoll/plain/delayed' => sub {
           my $self = shift;
           $self->write('how');
           $self->write('dy plain!');
-        }
-      );
-    }
-  );
+        });
+    });
 } => 'delayed';
 
 # GET /longpoll/nolength/delayed
@@ -176,10 +165,8 @@ get '/longpoll/nolength/delayed' => sub {
           my $self = shift;
           $self->write('how');
           $self->finish('dy nolength!');
-        }
-      );
-    }
-  );
+        });
+    });
 };
 
 # GET /longpoll/static/delayed
@@ -212,8 +199,7 @@ get '/longpoll/dynamic/delayed' => sub {
       $self->cookie(baz => 'yada');
       $self->res->body('Dynamic!');
       $self->rendered;
-    }
-  );
+    });
 } => 'dynamic';
 
 # GET /stream
@@ -303,11 +289,9 @@ Mojo::IOLoop->client(
         my ($stream, $chunk) = @_;
         $stream->close;
         Mojo::IOLoop->timer(0.25 => sub { Mojo::IOLoop->stop });
-      }
-    );
+      });
     $stream->write("GET /longpoll HTTP/1.1\x0d\x0a\x0d\x0a");
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $longpoll, 'finished!', 'finished';
 
@@ -319,8 +303,7 @@ $tx->res->body(
     my ($self, $chunk) = @_;
     $buffer .= $chunk;
     $self->error('Interrupted') if length $buffer == 3;
-  }
-);
+  });
 $t->ua->start($tx);
 is $tx->res->code,  200,           'right status';
 is $tx->res->error, 'Interrupted', 'right error';
@@ -417,8 +400,7 @@ $tx->res->body(
   sub {
     my ($self, $chunk) = @_;
     $buffer .= $chunk;
-  }
-);
+  });
 $t->ua->start($tx);
 is $tx->res->code, 200, 'right status';
 is $tx->error, 'Request timeout', 'right error';
@@ -432,8 +414,7 @@ $tx->res->body(
   sub {
     my ($self, $chunk) = @_;
     $buffer .= $chunk;
-  }
-);
+  });
 $t->ua->start($tx);
 is $tx->res->code, 200, 'right status';
 is $tx->error, 'Inactivity timeout', 'right error';

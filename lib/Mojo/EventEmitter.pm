@@ -103,10 +103,11 @@ Mojo::EventEmitter - Event emitter base class
 
   # Subscribe to events
   my $tiger = Cat->new;
-  $tiger->on(roar => sub {
-    my ($tiger, $times) = @_;
-    say 'RAWR!' for 1 .. $times;
-  });
+  $tiger->on(
+    roar => sub {
+      my ($tiger, $times) = @_;
+      say 'RAWR!' for 1 .. $times;
+    });
   $tiger->poke;
 
 =head1 DESCRIPTION
@@ -144,10 +145,11 @@ Check if event has subscribers.
 
 Subscribe to event.
 
-  $e->on(foo => sub {
-    my ($e, @args) = @_;
-    ...
-  });
+  $e->on(
+    foo => sub {
+      my ($e, @args) = @_;
+      ...
+    });
 
 =head2 C<once>
 
@@ -155,10 +157,11 @@ Subscribe to event.
 
 Subscribe to event and unsubscribe again after it has been emitted once.
 
-  $e->once(foo => sub {
-    my ($e, @args) = @_;
-    ...
-  });
+  $e->once(
+    foo => sub {
+      my ($e, @args) = @_;
+      ...
+    });
 
 =head2 C<subscribers>
 

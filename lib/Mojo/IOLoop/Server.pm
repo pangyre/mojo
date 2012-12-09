@@ -163,10 +163,11 @@ Mojo::IOLoop::Server - Non-blocking TCP server
 
   # Create listen socket
   my $server = Mojo::IOLoop::Server->new;
-  $server->on(accept => sub {
-    my ($server, $handle) = @_;
-    ...
-  });
+  $server->on(
+    accept => sub {
+      my ($server, $handle) = @_;
+      ...
+    });
   $server->listen(port => 3000);
 
   # Start and stop accepting connections
@@ -186,10 +187,11 @@ L<Mojo::IOLoop::Server> can emit the following events.
 
 =head2 C<accept>
 
-  $server->on(accept => sub {
-    my ($server, $handle) = @_;
-    ...
-  });
+  $server->on(
+    accept => sub {
+      my ($server, $handle) = @_;
+      ...
+    });
 
 Emitted safely for each accepted connection.
 

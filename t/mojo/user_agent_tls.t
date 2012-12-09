@@ -55,8 +55,7 @@ is $tx->res->body, 'works!', 'right content';
 
 # Valid certificates (using an already prepared socket)
 my $sock;
-$ua->ioloop->client(
-  {
+$ua->ioloop->client({
     address  => 'localhost',
     port     => $port,
     tls      => 1,
@@ -67,8 +66,7 @@ $ua->ioloop->client(
     my ($loop, $err, $stream) = @_;
     $sock = $stream->steal_handle;
     $loop->stop;
-  }
-);
+  });
 $ua->ioloop->start;
 $tx = $ua->build_tx(GET => 'https://lalala/');
 $tx->connection($sock);

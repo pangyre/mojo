@@ -50,8 +50,7 @@ my $config = plugin JSONConfig => {
     %$twinkle,
     append  => '$app->defaults(foo_test => 24)',
     prepend => 'my $foo = app->defaults("foo_test");'
-  }
-};
+  }};
 is $config->{foo},  'bar', 'right value';
 is $config->{test}, 23,    'right value';
 is app->defaults('foo_test'), 24, 'right value';
@@ -75,8 +74,7 @@ get '/docs3' => sub { shift->stash(codename => undef) } => 'docs';
 get '/rest' => sub {
   shift->respond_to(
     foo  => {text => 'foo works!'},
-    html => {text => 'html works!'}
-  );
+    html => {text => 'html works!'});
 };
 
 # GET /dead

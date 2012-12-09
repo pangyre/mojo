@@ -32,8 +32,7 @@ $log->unsubscribe('message')->on(
   message => sub {
     my ($log, $level, @lines) = @_;
     push @$msgs, $level, @lines;
-  }
-);
+  });
 $log->debug('Test', 1, 2, 3);
 is_deeply $msgs, [qw(debug Test 1 2 3)], 'right message';
 $msgs = [];

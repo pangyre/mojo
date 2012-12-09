@@ -398,41 +398,46 @@ L<Mojo::Message> can emit the following events.
 
 =head2 C<finish>
 
-  $msg->on(finish => sub {
-    my $msg = shift;
-    ...
-  });
+  $msg->on(
+    finish => sub {
+      my $msg = shift;
+      ...
+    });
 
 Emitted after message building or parsing is finished.
 
   my $before = time;
-  $msg->on(finish => sub {
-    my $msg = shift;
-    $msg->headers->header('X-Parser-Time' => time - $before);
-  });
+  $msg->on(
+    finish => sub {
+      my $msg = shift;
+      $msg->headers->header('X-Parser-Time' => time - $before);
+    });
 
 =head2 C<progress>
 
-  $msg->on(progress => sub {
-    my $msg = shift;
-    ...
-  });
+  $msg->on(
+    progress => sub {
+      my $msg = shift;
+      ...
+    });
 
 Emitted when message building or parsing makes progress.
 
   # Building
-  $msg->on(progress => sub {
-    my ($msg, $state, $offset) = @_;
-    say qq{Building "$state" at offset $offset};
-  });
+  $msg->on(
+    progress => sub {
+      my ($msg, $state, $offset) = @_;
+      say qq{Building "$state" at offset $offset};
+    });
 
   # Parsing
-  $msg->on(progress => sub {
-    my $msg = shift;
-    return unless my $len = $msg->headers->content_length;
-    my $size = $msg->content->progress;
-    say 'Progress: ', $size == $len ? 100 : int($size / ($len / 100)), '%';
-  });
+  $msg->on(
+    progress => sub {
+      my $msg = shift;
+      return unless my $len = $msg->headers->content_length;
+      my $size = $msg->content->progress;
+      say 'Progress: ', $size == $len ? 100 : int($size / ($len / 100)), '%';
+    });
 
 =head1 ATTRIBUTES
 
@@ -491,10 +496,11 @@ implements the following new ones.
 
 Access C<content> data or replace all subscribers of the C<read> event.
 
-  $msg->body(sub {
-    my ($msg, $chunk) = @_;
-    say "Streaming: $chunk";
-  });
+  $msg->body(
+    sub {
+      my ($msg, $chunk) = @_;
+      say "Streaming: $chunk";
+    });
 
 =head2 C<body_params>
 

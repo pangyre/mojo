@@ -114,9 +114,10 @@ timers.
 
   use Mojolicious::Lite;
 
-  Mojo::IOLoop->timer(0 => sub {
-    app->log->info("Worker $$ star...ALL GLORY TO THE HYPNOTOAD!");
-  });
+  Mojo::IOLoop->timer(
+    0 => sub {
+      app->log->info("Worker $$ star...ALL GLORY TO THE HYPNOTOAD!");
+    });
 
   get '/' => {text => 'Hello Wor...ALL GLORY TO THE HYPNOTOAD!'};
 
@@ -233,11 +234,12 @@ that passes along additional information with C<X-*> headers. In such cases
 you can use a C<before_dispatch> hook to rewrite incoming requests.
 
   # Change scheme if "X-Forwarded-Protocol" header is set to "https"
-  app->hook(before_dispatch => sub {
-    my $self = shift;
-    $self->req->url->base->scheme('https')
-      if $self->req->headers->header('X-Forwarded-Protocol') eq 'https';
-  });
+  app->hook(
+    before_dispatch => sub {
+      my $self = shift;
+      $self->req->url->base->scheme('https')
+        if $self->req->headers->header('X-Forwarded-Protocol') eq 'https';
+    });
 
 Since reverse proxies generally don't pass along information about path
 prefixes your application might be deployed under, rewriting the base path of
@@ -308,10 +310,11 @@ latency backend web services.
   # Search Twitter for "perl"
   get '/' => sub {
     my $self = shift;
-    $self->ua->get('http://search.twitter.com/search.json?q=perl' => sub {
-      my ($ua, $tx) = @_;
-      $self->render('twitter', results => $tx->res->json->{results});
-    });
+    $self->ua->get(
+      'http://search.twitter.com/search.json?q=perl' => sub {
+        my ($ua, $tx) = @_;
+        $self->render('twitter', results => $tx->res->json->{results});
+      });
   };
 
   app->start;
@@ -353,10 +356,11 @@ L<Mojo::IOLoop> delay.
       # Delayed rendering
       sub {
         my ($delay, $perl, $python) = @_;
-        $self->render(json => {
-          perl   => $perl->res->json('/results/0/text'),
-          python => $python->res->json('/results/0/text')
-        });
+        $self->render(
+          json => {
+            perl   => $perl->res->json('/results/0/text'),
+            python => $python->res->json('/results/0/text')
+          });
       }
     );
   };
@@ -375,9 +379,10 @@ won't block any other requests that might be processed in parallel.
   # Wait 3 seconds before rendering a response
   get '/' => sub {
     my $self = shift;
-    Mojo::IOLoop->timer(3 => sub {
-      $self->render(text => 'Delayed by 3 seconds!');
-    });
+    Mojo::IOLoop->timer(
+      3 => sub {
+        $self->render(text => 'Delayed by 3 seconds!');
+      });
   };
 
   app->start;
@@ -394,10 +399,11 @@ or they would just keep getting emitted.
 
     # Start recurring timer
     my $i = 1;
-    my $id = Mojo::IOLoop->recurring(1 => sub {
-      $self->write_chunk($i);
-      $self->finish if $i++ == 5;
-    });
+    my $id = Mojo::IOLoop->recurring(
+      1 => sub {
+        $self->write_chunk($i);
+        $self->finish if $i++ == 5;
+      });
 
     # Stop recurring timer
     $self->on(finish => sub { Mojo::IOLoop->remove($id) });
@@ -428,10 +434,11 @@ applications, errors can't get logged automatically, you can change that by
 subscribing to the event L<Mojo::Reactor/"error">.
 
   # Forward error messages to the application log
-  Mojo::IOLoop->singleton->reactor->on(error => sub {
-    my ($reactor, $err) = @_;
-    app->log->error($err);
-  });
+  Mojo::IOLoop->singleton->reactor->on(
+    error => sub {
+      my ($reactor, $err) = @_;
+      app->log->error($err);
+    });
 
 Just remember that all events are processed cooperatively, so your callbacks
 shouldn't block for too long.
@@ -460,16 +467,18 @@ method L<Mojolicious::Controller/"on">.
     Mojo::IOLoop->stream($self->tx->connection)->timeout(300);
 
     # Incoming message
-    $self->on(message => sub {
-      my ($self, $msg) = @_;
-      $self->send("echo: $msg");
-    });
+    $self->on(
+      message => sub {
+        my ($self, $msg) = @_;
+        $self->send("echo: $msg");
+      });
 
     # Disconnected
-    $self->on(finish => sub {
-      my $self = shift;
-      $self->app->log->debug('WebSocket disconnected.');
-    });
+    $self->on(
+      finish => sub {
+        my $self = shift;
+        $self->app->log->debug('WebSocket disconnected.');
+      });
   };
 
   app->start;
@@ -546,16 +555,18 @@ protocol for transport.
     $self->res->headers->content_type('text/event-stream');
 
     # Subscribe to "message" event and forward "log" events to browser
-    my $cb = $self->app->log->on(message => sub {
-      my ($log, $level, @lines) = @_;
-      $self->write("event:log\ndata: [$level] @lines\n\n");
-    });
+    my $cb = $self->app->log->on(
+      message => sub {
+        my ($log, $level, @lines) = @_;
+        $self->write("event:log\ndata: [$level] @lines\n\n");
+      });
 
     # Unsubscribe from "message" event again once we are done
-    $self->on(finish => sub {
-      my $self = shift;
-      $self->app->log->unsubscribe(message => $cb);
-    });
+    $self->on(
+      finish => sub {
+        my $self = shift;
+        $self->app->log->unsubscribe(message => $cb);
+      });
   };
 
   app->start;
@@ -605,23 +616,26 @@ which can be combined to solve some of hardest problems in web development.
     my $self = shift;
 
     # First invocation, subscribe to "part" event to find the right one
-    return $self->req->content->on(part => sub {
-      my ($multi, $single) = @_;
+    return $self->req->content->on(
+      part => sub {
+        my ($multi, $single) = @_;
 
-      # Subscribe to "body" event of part to make sure we have all headers
-      $single->on(body => sub {
-        my $single = shift;
+        # Subscribe to "body" event of part to make sure we have all headers
+        $single->on(
+          body => sub {
+            my $single = shift;
 
-        # Make sure we have the right part and replace "read" event
-        return unless $single->headers->content_disposition =~ /example/;
-        $single->unsubscribe('read')->on(read => sub {
-          my ($single, $chunk) = @_;
+            # Make sure we have the right part and replace "read" event
+            return unless $single->headers->content_disposition =~ /example/;
+            $single->unsubscribe('read')->on(
+              read => sub {
+                my ($single, $chunk) = @_;
 
-          # Log size of every chunk we receive
-          $self->app->log->debug(length($chunk) . ' bytes uploaded.');
-        });
-      });
-    }) unless $self->req->is_finished;
+                # Log size of every chunk we receive
+                $self->app->log->debug(length($chunk) . ' bytes uploaded.');
+              });
+          });
+      }) unless $self->req->is_finished;
 
     # Second invocation, render response
     $self->render(text => 'Upload was successful.');
@@ -693,10 +707,11 @@ Who actually controls the event loop backend is not important.
   # Search Twitter for "perl"
   my $cv = AE::cv;
   my $ua = Mojo::UserAgent->new;
-  $ua->get('http://search.twitter.com/search.json?q=perl' => sub {
-    my ($ua, $tx) = @_;
-    $cv->send($tx->res->json('/results/0/text'));
-  });
+  $ua->get(
+    'http://search.twitter.com/search.json?q=perl' => sub {
+      my ($ua, $tx) = @_;
+      $cv->send($tx->res->json('/results/0/text'));
+    });
   say $cv->recv;
 
 You could for example just embed the built-in web server into an L<AnyEvent>
@@ -738,9 +753,7 @@ sense for a standalone parser.
   say 'Title: ', $tx->res->dom->at('head > title')->text;
 
   # Extract headings
-  $tx->res->dom('h1, h2, h3')->each(sub {
-    say 'Heading: ', shift->all_text;
-  });
+  $tx->res->dom('h1, h2, h3')->each(sub { say 'Heading: ', shift->all_text });
 
   # Recurse through children manually to extract more than just text
   sub text_and_images {
@@ -814,11 +827,12 @@ them.
   my $ua = Mojo::UserAgent->new(max_redirects => 10);
 
   # Add a witty header to every request
-  $ua->on(start => sub {
-    my ($ua, $tx) = @_;
-    $tx->req->headers->header('X-Bender' => 'Bite my shiny metal ass!');
-    say 'Request: ', $tx->req->url->clone->to_abs;
-  });
+  $ua->on(
+    start => sub {
+      my ($ua, $tx) = @_;
+      $tx->req->headers->header('X-Bender' => 'Bite my shiny metal ass!');
+      say 'Request: ', $tx->req->url->clone->to_abs;
+    });
 
   # Request that will most likely get redirected
   say 'Title: ', $ua->get('google.com')->res->dom->at('head > title')->text;
@@ -837,10 +851,11 @@ L<Mojo::UserAgent> makes it actually easy.
   my $tx = $ua->build_tx(GET => 'http://mojolicio.us');
 
   # Replace "read" events to disable default content parser
-  $tx->res->content->unsubscribe('read')->on(read => sub {
-    my ($content, $chunk) = @_;
-    say "Streaming: $chunk";
-  });
+  $tx->res->content->unsubscribe('read')->on(
+    read => sub {
+      my ($content, $chunk) = @_;
+      say "Streaming: $chunk";
+    });
 
   # Process transaction
   $ua->start($tx);
@@ -934,14 +949,16 @@ can keep many parallel connections active at the same time.
 
   # Parallel non-blocking requests
   my $ua = Mojo::UserAgent->new;
-  $ua->get('http://mojolicio.us' => sub {
-    my ($ua, $tx) = @_;
-    ...
-  });
-  $ua->get('http://mojolicio.us/perldoc' => sub {
-    my ($ua, $tx) = @_;
-    ...
-  });
+  $ua->get(
+    'http://mojolicio.us' => sub {
+      my ($ua, $tx) = @_;
+      ...
+    });
+  $ua->get(
+    'http://mojolicio.us/perldoc' => sub {
+      my ($ua, $tx) = @_;
+      ...
+    });
 
   # Start event loop if necessary
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
@@ -972,10 +989,11 @@ be able to work standalone as well as inside L<Mojolicious> applications.
 
   # Synchronize non-blocking requests portably
   my $ua    = Mojo::UserAgent->new;
-  my $delay = Mojo::IOLoop->delay(sub {
-    my ($delay, $tx, $tx2) = @_;
-    ...
-  });
+  my $delay = Mojo::IOLoop->delay(
+    sub {
+      my ($delay, $tx, $tx2) = @_;
+      ...
+    });
   $ua->get('http://mojolicio.us'         => $delay->begin);
   $ua->get('http://mojolicio.us/perldoc' => $delay->begin);
   $delay->wait unless Mojo::IOLoop->is_running;

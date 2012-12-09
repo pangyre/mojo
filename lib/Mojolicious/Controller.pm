@@ -576,16 +576,18 @@ Subscribe to events of C<tx>, which is usually a L<Mojo::Transaction::HTTP> or
 L<Mojo::Transaction::WebSocket> object.
 
   # Emitted when the transaction has been finished
-  $c->on(finish => sub {
-    my $c = shift;
-    $c->app->log->debug('We are done!');
-  });
+  $c->on(
+    finish => sub {
+      my $c = shift;
+      $c->app->log->debug('We are done!');
+    });
 
   # Emitted when new WebSocket messages arrive
-  $c->on(message => sub {
-    my ($c, $msg) = @_;
-    $c->app->log->debug("Message: $msg");
-  });
+  $c->on(
+    message => sub {
+      my ($c, $msg) = @_;
+      $c->app->log->debug("Message: $msg");
+    });
 
 =head2 C<param>
 
@@ -695,9 +697,10 @@ automatic rendring would result in a response.
 
   # Delayed rendering
   $c->render_later;
-  Mojo::IOLoop->timer(2 => sub {
-    $c->render(text => 'Delayed by 2 seconds!');
-  });
+  Mojo::IOLoop->timer(
+    2 => sub {
+      $c->render(text => 'Delayed by 2 seconds!');
+    });
 
 =head2 C<render_not_found>
 
@@ -896,22 +899,25 @@ Get L<Mojo::UserAgent> object from L<Mojo/"ua">.
   my $tx = $c->ua->post_form('http://kraih.com/login' => {user => 'mojo'});
 
   # Non-blocking
-  $c->ua->get('http://mojolicio.us' => sub {
-    my ($ua, $tx) = @_;
-    $c->render_data($tx->res->body);
-  });
+  $c->ua->get(
+    'http://mojolicio.us' => sub {
+      my ($ua, $tx) = @_;
+      $c->render_data($tx->res->body);
+    });
 
   # Parallel non-blocking
-  my $delay = Mojo::IOLoop->delay(sub {
-    my ($delay, @titles) = @_;
-    $c->render_json(\@titles);
-  });
+  my $delay = Mojo::IOLoop->delay(
+    sub {
+      my ($delay, @titles) = @_;
+      $c->render_json(\@titles);
+    });
   for my $url ('http://mojolicio.us', 'https://metacpan.org') {
     $delay->begin;
-    $c->ua->get($url => sub {
-      my ($ua, $tx) = @_;
-      $delay->end($tx->res->dom->html->head->title->text);
-    });
+    $c->ua->get(
+      $url => sub {
+        my ($ua, $tx) = @_;
+        $delay->end($tx->res->dom->html->head->title->text);
+      });
   }
 
 =head2 C<url_for>
@@ -948,19 +954,22 @@ invoked once all data has been written.
 
   # Keep connection alive (with Content-Length header)
   $c->res->headers->content_length(6);
-  $c->write('Hel' => sub {
-    my $c = shift;
-    $c->write('lo!')
-  });
+  $c->write(
+    'Hel' => sub {
+      my $c = shift;
+      $c->write('lo!')
+    });
 
   # Close connection when finished (without Content-Length header)
-  $c->write('Hel' => sub {
-    my $c = shift;
-    $c->write('lo!' => sub {
+  $c->write(
+    'Hel' => sub {
       my $c = shift;
-      $c->finish;
+      $c->write(
+        'lo!' => sub {
+          my $c = shift;
+          $c->finish;
+        });
     });
-  });
 
 For Comet (C<long polling>) you might also want to increase the inactivity
 timeout, which usually defaults to C<15> seconds.
@@ -979,13 +988,15 @@ Write dynamic content non-blocking with C<chunked> transfer encoding, the
 optional drain callback will be invoked once all data has been written.
 
   # Make sure previous chunk has been written before continuing
-  $c->write_chunk('He' => sub {
-    my $c = shift;
-    $c->write_chunk('ll' => sub {
+  $c->write_chunk(
+    'He' => sub {
       my $c = shift;
-      $c->finish('o!');
+      $c->write_chunk(
+        'll' => sub {
+          my $c = shift;
+          $c->finish('o!');
+        });
     });
-  });
 
 You can call C<finish> at any time to end the stream.
 

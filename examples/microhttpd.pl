@@ -28,11 +28,9 @@ Mojo::IOLoop->server(
           $stream->write("HTTP/1.1 200 OK\x0d\x0a"
               . "Connection: keep-alive\x0d\x0a\x0d\x0a");
         }
-      }
-    );
+      });
     $stream->on(close => sub { delete $buffer{$id} });
-  }
-) or die "Couldn't create listen socket!\n";
+  }) or die "Couldn't create listen socket!\n";
 
 print <<'EOF';
 Starting server on port 3000.

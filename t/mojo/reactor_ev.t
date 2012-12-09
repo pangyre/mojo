@@ -186,8 +186,7 @@ $reactor->on(
   error => sub {
     shift->stop;
     $err = pop;
-  }
-);
+  });
 $reactor->timer(0 => sub { die "works!\n" });
 $reactor->start;
 like $err, qr/works!/, 'right error';
@@ -220,8 +219,7 @@ Mojo::IOLoop->server(
     $server_running = Mojo::IOLoop->is_running;
     eval { Mojo::IOLoop->start };
     $server_err = $@;
-  }
-);
+  });
 Mojo::IOLoop->client(
   {port => $port} => sub {
     my ($loop, $err, $stream) = @_;
@@ -230,8 +228,7 @@ Mojo::IOLoop->client(
     $client_running = Mojo::IOLoop->is_running;
     eval { Mojo::IOLoop->start };
     $client_err = $@;
-  }
-);
+  });
 Mojo::IOLoop->timer(1 => sub { EV::break(EV::BREAK_ALL()) });
 EV::run();
 ok !Mojo::IOLoop->is_running, 'loop is not running';

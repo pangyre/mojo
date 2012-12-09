@@ -66,17 +66,19 @@ L<Mojo::Reactor> can emit the following events.
 
 =head2 C<error>
 
-  $reactor->on(error => sub {
-    my ($reactor, $err) = @_;
-    ...
-  });
+  $reactor->on(
+    error => sub {
+      my ($reactor, $err) = @_;
+      ...
+    });
 
 Emitted safely for exceptions caught in callbacks.
 
-  $reactor->on(error => sub {
-    my ($reactor, $err) = @_;
-    say "Something very bad happened: $err";
-  });
+  $reactor->on(
+    error => sub {
+      my ($reactor, $err) = @_;
+      say "Something very bad happened: $err";
+    });
 
 =head1 METHODS
 
@@ -102,10 +104,11 @@ Watch handle for I/O events, invoking the callback whenever handle becomes
 readable or writable. Meant to be overloaded in a subclass.
 
   # Callback will be invoked twice if handle becomes readable and writable
-  $reactor->io($handle => sub {
-    my ($reactor, $writable) = @_;
-    say $writable ? 'Handle is writable' : 'Handle is readable';
-  });
+  $reactor->io(
+    $handle => sub {
+      my ($reactor, $writable) = @_;
+      say $writable ? 'Handle is writable' : 'Handle is readable';
+    });
 
 =head2 C<is_readable>
 

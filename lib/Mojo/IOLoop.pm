@@ -81,14 +81,12 @@ sub client {
 
       # Connected
       $self->$cb(undef, $stream);
-    }
-  );
+    });
   $client->on(
     error => sub {
       $self->_remove($id);
       $self->$cb(pop, undef);
-    }
-  );
+    });
   $client->connect(@_);
 
   return $id;
@@ -146,8 +144,7 @@ sub server {
 
       # Stop accepting
       $self->_not_accepting;
-    }
-  );
+    });
   $server->listen(@_);
 
   return $self->acceptor($server);
@@ -292,40 +289,45 @@ Mojo::IOLoop - Minimalistic event loop
   use Mojo::IOLoop;
 
   # Listen on port 3000
-  Mojo::IOLoop->server({port => 3000} => sub {
-    my ($loop, $stream) = @_;
+  Mojo::IOLoop->server(
+    {port => 3000} => sub {
+      my ($loop, $stream) = @_;
 
-    $stream->on(read => sub {
-      my ($stream, $chunk) = @_;
+      $stream->on(
+        read => sub {
+          my ($stream, $chunk) = @_;
 
-      # Process input
-      say $chunk;
+          # Process input
+          say $chunk;
 
-      # Got some data, time to write
-      $stream->write('HTTP/1.1 200 OK');
+          # Got some data, time to write
+          $stream->write('HTTP/1.1 200 OK');
+        });
     });
-  });
 
   # Connect to port 3000
-  my $id = Mojo::IOLoop->client({port => 3000} => sub {
-    my ($loop, $err, $stream) = @_;
+  my $id = Mojo::IOLoop->client(
+    {port => 3000} => sub {
+      my ($loop, $err, $stream) = @_;
 
-    $stream->on(read => sub {
-      my ($stream, $chunk) = @_;
+      $stream->on(
+        read => sub {
+          my ($stream, $chunk) = @_;
 
-      # Process input
-      say "Input: $chunk";
+          # Process input
+          say "Input: $chunk";
+        });
+
+      # Write request
+      $stream->write("GET / HTTP/1.1\r\n\r\n");
     });
 
-    # Write request
-    $stream->write("GET / HTTP/1.1\r\n\r\n");
-  });
-
   # Add a timer
-  Mojo::IOLoop->timer(5 => sub {
-    my $loop = shift;
-    $loop->remove($id);
-  });
+  Mojo::IOLoop->timer(
+    5 => sub {
+      my $loop = shift;
+      $loop->remove($id);
+    });
 
   # Start event loop if necessary
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
@@ -369,12 +371,13 @@ A callback for acquiring the accept mutex, used to sync multiple server
 processes. The callback should return true or false. Note that exceptions in
 this callback are not captured.
 
-  $loop->lock(sub {
-    my ($loop, $blocking) = @_;
+  $loop->lock(
+    sub {
+      my ($loop, $blocking) = @_;
 
-    # Got the accept mutex, start accepting new connections
-    return 1;
-  });
+      # Got the accept mutex, start accepting new connections
+      return 1;
+    });
 
 =head2 C<max_accepts>
 
@@ -414,10 +417,11 @@ Low level event reactor, usually a L<Mojo::Reactor::Poll> or
 L<Mojo::Reactor::EV> object.
 
   # Watch if handle becomes readable or writable
-  $loop->reactor->io($handle => sub {
-    my ($reactor, $writable) = @_;
-    say $writable ? 'Handle is writable' : 'Handle is readable';
-  });
+  $loop->reactor->io(
+    $handle => sub {
+      my ($reactor, $writable) = @_;
+      say $writable ? 'Handle is writable' : 'Handle is readable';
+    });
 
   # Change to watching only if handle becomes writable
   $loop->reactor->watch($handle, 0, 1);
@@ -454,10 +458,11 @@ Open TCP connection with L<Mojo::IOLoop::Client>, takes the same arguments as
 L<Mojo::IOLoop::Client/"connect">.
 
   # Connect to localhost on port 3000
-  Mojo::IOLoop->client({port => 3000} => sub {
-    my ($loop, $err, $stream) = @_;
-    ...
-  });
+  Mojo::IOLoop->client(
+    {port => 3000} => sub {
+      my ($loop, $err, $stream) = @_;
+      ...
+    });
 
 =head2 C<delay>
 
@@ -474,10 +479,11 @@ ones as a chain of steps.
   my $delay = Mojo::IOLoop->delay(sub { say 'BOOM!' });
   for my $i (1 .. 10) {
     $delay->begin;
-    Mojo::IOLoop->timer($i => sub {
-      say 10 - $i;
-      $delay->end;
-    });
+    Mojo::IOLoop->timer(
+      $i => sub {
+        say 10 - $i;
+        $delay->end;
+      });
   }
 
   # Sequentialize multiple events
@@ -558,10 +564,11 @@ Accept TCP connections with L<Mojo::IOLoop::Server>, takes the same arguments
 as L<Mojo::IOLoop::Server/"listen">.
 
   # Listen on port 3000
-  Mojo::IOLoop->server({port => 3000} => sub {
-    my ($loop, $stream, $id) = @_;
-    ...
-  });
+  Mojo::IOLoop->server(
+    {port => 3000} => sub {
+      my ($loop, $stream, $id) = @_;
+      ...
+    });
 
 =head2 C<singleton>
 

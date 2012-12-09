@@ -39,8 +39,7 @@ $ua->get(
     $id   = $tx->connection;
     $code = $tx->res->code;
     $loop->stop;
-  }
-);
+  });
 $loop->start;
 $ua = undef;
 $loop->timer(0.25 => sub { shift->stop });
@@ -105,8 +104,7 @@ $ua->get(
     my $tx = pop;
     Mojo::IOLoop->singleton->stop;
     $kept_alive = $tx->kept_alive;
-  }
-);
+  });
 Mojo::IOLoop->singleton->start;
 ok $kept_alive, 'connection was kept alive';
 
@@ -125,12 +123,9 @@ $ua->get(
             my ($self, $tx) = @_;
             push @kept_alive, $tx->kept_alive;
             Mojo::IOLoop->singleton->stop;
-          }
-        );
-      }
-    );
-  }
-);
+          });
+      });
+  });
 Mojo::IOLoop->singleton->start;
 is_deeply \@kept_alive, [1, 1, 1], 'connections kept alive';
 
@@ -254,8 +249,7 @@ $tx->req->headers->transfer_encoding('chunked');
 $tx->req->write_chunk(
   'hello world!' => sub {
     shift->write_chunk('hello world2!' => sub { shift->write_chunk('') });
-  }
-);
+  });
 $ua->start($tx);
 is_deeply [$tx->error],      ['Bad Request', 400], 'right error';
 is_deeply [$tx->res->error], ['Bad Request', 400], 'right error';

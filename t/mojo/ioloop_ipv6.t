@@ -24,8 +24,7 @@ Mojo::IOLoop->server(
     $stream->write('test' => sub { shift->write('321') });
     $stream->on(close => sub { $delay->end });
     $stream->on(read => sub { $server .= pop });
-  }
-);
+  });
 $delay->begin;
 Mojo::IOLoop->client(
   {address => '[::1]', port => $port} => sub {
@@ -34,8 +33,7 @@ Mojo::IOLoop->client(
     $stream->on(close => sub { $delay->end });
     $stream->on(read => sub { $client .= pop });
     $stream->timeout(0.5);
-  }
-);
+  });
 $delay->wait;
 is $server, 'tset123', 'right content';
 is $client, 'test321', 'right content';

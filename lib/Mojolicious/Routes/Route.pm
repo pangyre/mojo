@@ -604,10 +604,11 @@ L<Mojolicious::Lite> tutorial for more argument variations.
 In addition to the attributes and methods above you can also call shortcuts
 on L<Mojolicious::Routes::Route> objects.
 
-  $r->root->add_shortcut(firefox => sub {
-    my ($r, $path) = @_;
-    $r->get($path, agent => qr/Firefox/);
-  });
+  $r->root->add_shortcut(
+    firefox => sub {
+      my ($r, $path) = @_;
+      $r->get($path, agent => qr/Firefox/);
+    });
 
   $r->firefox('/welcome')->to('firefox#welcome');
   $r->firefox('/bye')->to('firefox#bye);

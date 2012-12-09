@@ -303,8 +303,7 @@ sub _spawn {
       else { $l = flock $lock, LOCK_EX | LOCK_NB }
 
       return $l;
-    }
-  );
+    });
   $loop->unlock(sub { flock $lock, LOCK_UN });
 
   # Heartbeat messages (stop sending during graceful stop)
@@ -313,8 +312,7 @@ sub _spawn {
     $c->{heartbeat_interval} => sub {
       return unless shift->max_connections;
       $self->{writer}->syswrite("$$\n") or exit 0;
-    }
-  );
+    });
 
   # Clean worker environment
   $SIG{$_} = 'DEFAULT' for qw(INT TERM CHLD USR2 TTIN TTOU);

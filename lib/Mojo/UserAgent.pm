@@ -204,8 +204,7 @@ sub _connect {
       $stream->on(error => sub { $self && $self->_error($id, pop, 1) });
       $stream->on(read => sub { $self->_read($id => pop) });
       $cb->();
-    }
-  );
+    });
 }
 
 sub _connect_proxy {
@@ -238,8 +237,7 @@ sub _connect_proxy {
       $id = $self->_connect($self->transactor->endpoint($old),
         $handle, sub { $self->_start($old->connection($id), $cb) });
       $self->{connections}{$id} = $c;
-    }
-  );
+    });
 }
 
 sub _connected {
@@ -549,38 +547,43 @@ Mojo::UserAgent - Non-blocking I/O HTTP and WebSocket user agent
   my $delay = Mojo::IOLoop->delay;
   for my $url ('mojolicio.us', 'cpan.org') {
     $delay->begin;
-    $ua->get($url => sub {
-      my ($ua, $tx) = @_;
-      $delay->end($tx->res->dom->at('title')->text);
-    });
+    $ua->get(
+      $url => sub {
+        my ($ua, $tx) = @_;
+        $delay->end($tx->res->dom->at('title')->text);
+      });
   }
   my @titles = $delay->wait;
 
   # Non-blocking parallel requests (does work inside a running event loop)
-  my $delay = Mojo::IOLoop->delay(sub {
-    my ($delay, @titles) = @_;
-    ...
-  });
+  my $delay = Mojo::IOLoop->delay(
+    sub {
+      my ($delay, @titles) = @_;
+      ...
+    });
   for my $url ('mojolicio.us', 'cpan.org') {
     $delay->begin;
-    $ua->get($url => sub {
-      my ($ua, $tx) = @_;
-      $delay->end($tx->res->dom->at('title')->text);
-    });
+    $ua->get(
+      $url => sub {
+        my ($ua, $tx) = @_;
+        $delay->end($tx->res->dom->at('title')->text);
+      });
   }
   $delay->wait unless Mojo::IOLoop->is_running;
 
   # Non-blocking WebSocket connection
-  $ua->websocket('ws://websockets.org:8787' => sub {
-    my ($ua, $tx) = @_;
-    $tx->on(finish  => sub { say 'WebSocket closed.' });
-    $tx->on(message => sub {
-      my ($tx, $msg) = @_;
-      say "WebSocket message: $msg";
-      $tx->finish;
+  $ua->websocket(
+    'ws://websockets.org:8787' => sub {
+      my ($ua, $tx) = @_;
+      $tx->on(finish  => sub { say 'WebSocket closed.' });
+      $tx->on(
+        message => sub {
+          my ($tx, $msg) = @_;
+          say "WebSocket message: $msg";
+          $tx->finish;
+        });
+      $tx->send('hi there!');
     });
-    $tx->send('hi there!');
-  });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head1 DESCRIPTION
@@ -602,32 +605,36 @@ L<Mojo::UserAgent> can emit the following events.
 
 =head2 C<error>
 
-  $ua->on(error => sub {
-    my ($ua, $err) = @_;
-    ...
-  });
+  $ua->on(
+    error => sub {
+      my ($ua, $err) = @_;
+      ...
+    });
 
 Emitted if an error occurs that can't be associated with a transaction.
 
-  $ua->on(error => sub {
-    my ($ua, $err) = @_;
-    say "This looks bad: $err";
-  });
+  $ua->on(
+    error => sub {
+      my ($ua, $err) = @_;
+      say "This looks bad: $err";
+    });
 
 =head2 C<start>
 
-  $ua->on(start => sub {
-    my ($ua, $tx) = @_;
-    ...
-  });
+  $ua->on(
+    start => sub {
+      my ($ua, $tx) = @_;
+      ...
+    });
 
 Emitted whenever a new transaction is about to start, this includes
 automatically prepared proxy C<CONNECT> requests and followed redirects.
 
-  $ua->on(start => sub {
-    my ($ua, $tx) = @_;
-    $tx->req->headers->header('X-Bender' => 'Bite my shiny metal ass!');
-  });
+  $ua->on(
+    start => sub {
+      my ($ua, $tx) = @_;
+      $tx->req->headers->header('X-Bender' => 'Bite my shiny metal ass!');
+    });
 
 =head1 ATTRIBUTES
 
@@ -854,10 +861,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"tx"> (except for the method). You can also
 append a callback to perform requests non-blocking.
 
-  $ua->delete('http://kraih.com' => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->delete(
+    'http://kraih.com' => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<detect_proxy>
@@ -878,10 +886,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"tx"> (except for the method). You can also
 append a callback to perform requests non-blocking.
 
-  $ua->get('http://kraih.com' => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->get(
+    'http://kraih.com' => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<head>
@@ -894,10 +903,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"tx"> (except for the method). You can also
 append a callback to perform requests non-blocking.
 
-  $ua->head('http://kraih.com' => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->head(
+    'http://kraih.com' => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<need_proxy>
@@ -916,10 +926,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"tx"> (except for the method). You can also
 append a callback to perform requests non-blocking.
 
-  $ua->options('http://kraih.com' => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->options(
+    'http://kraih.com' => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<patch>
@@ -932,10 +943,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"tx"> (except for the method). You can also
 append a callback to perform requests non-blocking.
 
-  $ua->patch('http://kraih.com' => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->patch(
+    'http://kraih.com' => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<post>
@@ -948,10 +960,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"tx"> (except for the method). You can also
 append a callback to perform requests non-blocking.
 
-  $ua->post('http://kraih.com' => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->post(
+    'http://kraih.com' => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<post_form>
@@ -964,10 +977,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"form">. You can also append a callback to
 perform requests non-blocking.
 
-  $ua->post_form('http://kraih.com' => {q => 'test'} => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->post_form(
+    'http://kraih.com' => {q => 'test'} => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<post_json>
@@ -980,10 +994,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"json">. You can also append a callback to
 perform requests non-blocking.
 
-  $ua->post_json('http://kraih.com' => {q => 'test'} => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->post_json(
+    'http://kraih.com' => {q => 'test'} => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<put>
@@ -996,10 +1011,11 @@ L<Mojo::Transaction::HTTP> object, takes the exact same arguments as
 L<Mojo::UserAgent::Transactor/"tx"> (except for the method). You can also
 append a callback to perform requests non-blocking.
 
-  $ua->put('http://kraih.com' => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->put(
+    'http://kraih.com' => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<start>
@@ -1010,10 +1026,11 @@ Perform blocking request. You can also append a callback to perform requests
 non-blocking.
 
   my $tx = $ua->build_tx(GET => 'http://kraih.com');
-  $ua->start($tx => sub {
-    my ($ua, $tx) = @_;
-    say $tx->res->body;
-  });
+  $ua->start(
+    $tx => sub {
+      my ($ua, $tx) = @_;
+      say $tx->res->body;
+    });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head2 C<websocket>
@@ -1024,14 +1041,16 @@ non-blocking.
 Open a non-blocking WebSocket connection with transparent handshake, takes the
 exact same arguments as L<Mojo::UserAgent::Transactor/"websocket">.
 
-  $ua->websocket('ws://localhost:3000/echo' => sub {
-    my ($ua, $tx) = @_;
-    $tx->on(message => sub {
-      my ($tx, $msg) = @_;
-      say $msg;
+  $ua->websocket(
+    'ws://localhost:3000/echo' => sub {
+      my ($ua, $tx) = @_;
+      $tx->on(
+        message => sub {
+          my ($tx, $msg) = @_;
+          say $msg;
+        });
+      $tx->send('Hi!');
     });
-    $tx->send('Hi!');
-  });
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
 
 =head1 DEBUGGING

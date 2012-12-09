@@ -21,8 +21,7 @@ sub register {
         $stash->{$name} = shift if @_;
         $self->stash(@_) if @_;
         return $stash->{$name};
-      }
-    );
+      });
   }
 
   # Add "config" helper
@@ -66,16 +65,14 @@ sub register {
       # Memorize new result
       $mem{$name}{expires} = $expires;
       return $mem{$name}{content} = $cb->();
-    }
-  );
+    });
 
   # DEPRECATED in Rainbow!
   $app->helper(
     render_content => sub {
       warn "Mojolicious::Controller->render_content is DEPRECATED!\n";
       shift->content(@_);
-    }
-  );
+    });
 
   # Add "url_with" helper
   $app->helper(url_with => \&_url_with);

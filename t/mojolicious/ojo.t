@@ -18,8 +18,7 @@ a(
   '/' => sub {
     my $self = shift;
     $self->render(data => $self->req->method . $self->req->body);
-  }
-)->secret('foobarbaz');
+  })->secret('foobarbaz');
 is a->secret, 'foobarbaz', 'right secret';
 
 # GET /

@@ -16,8 +16,7 @@ app->routes->add_condition(
     my ($route, $c, $captures, $msg) = @_;
     $c->res->headers->header('X-Message' => $msg);
     return 1;
-  }
-);
+  });
 
 # GET /
 get '/' => 'index';
@@ -33,8 +32,7 @@ get '/stream' => sub {
   shift->write_chunk(
     'he' => sub {
       shift->write_chunk('ll' => sub { shift->finish('o!') });
-    }
-  );
+    });
 };
 
 # GET /url/☃

@@ -52,8 +52,7 @@ websocket '/test' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send("${msg}test2");
-    }
-  );
+    });
 };
 
 # Web server with valid certificates
@@ -115,35 +114,29 @@ Mojo::IOLoop->server(
                     $read += length $chunk;
                     $sent += length $chunk;
                     Mojo::IOLoop->stream($client)->write($chunk);
-                  }
-                );
+                  });
 
                 # Server closed connection
                 $stream->on(
                   close => sub {
                     Mojo::IOLoop->remove($client);
                     delete $buffer{$client};
-                  }
-                );
-              }
-            );
+                  });
+              });
           }
         }
 
         # Invalid request from client
         else { Mojo::IOLoop->remove($client) }
-      }
-    );
+      });
 
     # Client closed connection
     $stream->on(
       close => sub {
         my $buffer = delete $buffer{$client};
         Mojo::IOLoop->remove($buffer->{connection}) if $buffer->{connection};
-      }
-    );
-  }
-);
+      });
+  });
 
 # User agent with valid certificates
 my $ua = Mojo::UserAgent->new(
@@ -158,8 +151,7 @@ $ua->get(
   "https://localhost:$port/" => sub {
     $result = pop->success->body;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $result, "Hello World! / https://localhost:$port/", 'right content';
 
@@ -169,8 +161,7 @@ $ua->on(
   start => sub {
     $start++;
     pop->req->headers->header('X-Works', 'it does!');
-  }
-);
+  });
 $result = undef;
 my $works;
 $ua->max_redirects(3)->get(
@@ -179,8 +170,7 @@ $ua->max_redirects(3)->get(
     $result = $tx->success->body;
     $works  = $tx->res->headers->header('X-Works');
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $result, "Hello World! / https://localhost:$port/", 'right content';
 is $works,  'it does!',                                'right header';
@@ -198,11 +188,9 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->finish;
-      }
-    );
+      });
     $tx->send('test1');
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $result, 'test1test2', 'right result';
 
@@ -217,8 +205,7 @@ $ua->get(
     $auth       = $tx->req->headers->proxy_authorization;
     $kept_alive = $tx->kept_alive;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok !$auth,       'no "Proxy-Authorization" header';
 ok !$kept_alive, 'connection was not kept alive';
@@ -232,8 +219,7 @@ $ua->get(
     $kept_alive = $tx->kept_alive;
     $result     = $tx->success->body;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $result, "https://localhost:$port/proxy", 'right content';
 ok $kept_alive, 'connection was kept alive';
@@ -251,11 +237,9 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->finish;
-      }
-    );
+      });
     $tx->send('test1');
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok $kept_alive, 'connection was kept alive';
 is $connected,  "localhost:$port", 'connected';
@@ -273,8 +257,7 @@ $ua->websocket(
     $success = $tx->success;
     $err     = $tx->error;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok !$success, 'no success';
 is $err, 'Proxy connection failed', 'right message';

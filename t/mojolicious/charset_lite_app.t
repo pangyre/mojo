@@ -25,8 +25,7 @@ app->renderer->add_handler(
     my ($renderer, $c, $output, $options) = @_;
     delete $options->{encoding};
     $$output = b($c->stash->{test})->encode('UTF-8')->to_string;
-  }
-);
+  });
 
 # GET /
 get '/' => 'index';
@@ -58,12 +57,9 @@ get '/привет/мир' => sub { shift->render_json({foo => $yatta}) };
 # GET /params
 get '/params' => sub {
   my $self = shift;
-  $self->render_json(
-    {
+  $self->render_json({
       params => $self->req->url->query->to_hash,
-      yatta  => $self->param(['yatta'])
-    }
-  );
+      yatta  => $self->param(['yatta'])});
 };
 
 my $t = Test::Mojo->new;

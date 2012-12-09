@@ -127,20 +127,22 @@ Mojo::Reactor::Poll - Low level event reactor with poll support
 
   # Watch if handle becomes readable or writable
   my $reactor = Mojo::Reactor::Poll->new;
-  $reactor->io($handle => sub {
-    my ($reactor, $writable) = @_;
-    say $writable ? 'Handle is writable' : 'Handle is readable';
-  });
+  $reactor->io(
+    $handle => sub {
+      my ($reactor, $writable) = @_;
+      say $writable ? 'Handle is writable' : 'Handle is readable';
+    });
 
   # Change to watching only if handle becomes writable
   $reactor->watch($handle, 0, 1);
 
   # Add a timer
-  $reactor->timer(15 => sub {
-    my $reactor = shift;
-    $reactor->remove($handle);
-    say 'Timeout!';
-  });
+  $reactor->timer(
+    15 => sub {
+      my $reactor = shift;
+      $reactor->remove($handle);
+      say 'Timeout!';
+    });
 
   # Start reactor if necessary
   $reactor->start unless $reactor->is_running;

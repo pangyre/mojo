@@ -433,11 +433,12 @@ Extend L<Mojolicious> with hooks, which allow code to be shared with all
 requests indiscriminately.
 
   # Dispatchers will not run if there's already a response code defined
-  $app->hook(before_dispatch => sub {
-    my $c = shift;
-    $c->render(text => 'Skipped dispatchers!')
-      if $c->req->url->path->contains('/do_not_dispatch');
-  });
+  $app->hook(
+    before_dispatch => sub {
+      my $c = shift;
+      $c->render(text => 'Skipped dispatchers!')
+        if $c->req->url->path->contains('/do_not_dispatch');
+    });
 
 These hooks are currently available and are emitted in the listed order:
 
@@ -448,10 +449,11 @@ These hooks are currently available and are emitted in the listed order:
 Emitted right after the transaction is built and before the HTTP request gets
 parsed.
 
-  $app->hook(after_build_tx => sub {
-    my ($tx, $app) = @_;
-    ...
-  });
+  $app->hook(
+    after_build_tx => sub {
+      my ($tx, $app) = @_;
+      ...
+    });
 
 This is a very powerful hook and should not be used lightly, it makes some
 rather advanced features such as upload progress bars possible. Note that this
@@ -462,10 +464,11 @@ application object)
 
 Emitted right before the static dispatcher and router start their work.
 
-  $app->hook(before_dispatch => sub {
-    my $c = shift;
-    ...
-  });
+  $app->hook(
+    before_dispatch => sub {
+      my $c = shift;
+      ...
+    });
 
 Very useful for rewriting incoming requests and other preprocessing tasks.
 (Passed the default controller object)
@@ -475,10 +478,11 @@ Very useful for rewriting incoming requests and other preprocessing tasks.
 Emitted in reverse order after the static dispatcher determined if a static
 file should be served and before the router starts its work.
 
-  $app->hook(after_static_dispatch => sub {
-    my $c = shift;
-    ...
-  });
+  $app->hook(
+    after_static_dispatch => sub {
+      my $c = shift;
+      ...
+    });
 
 Mostly used for custom dispatchers and post-processing static file responses.
 (Passed the default controller object)
@@ -490,10 +494,11 @@ hook can trigger before C<after_static_dispatch> due to its dynamic nature,
 and with embedded applications will only work for the application rendering
 the response.
 
-  $app->hook(after_dispatch => sub {
-    my $c = shift;
-    ...
-  });
+  $app->hook(
+    after_dispatch => sub {
+      my $c = shift;
+      ...
+    });
 
 Useful for rewriting outgoing responses and other post-processing tasks.
 (Passed the current controller object)
@@ -506,12 +511,13 @@ to continue the chain. Default exception handling with
 L<Mojolicious::Controller/"render_exception"> is the first hook in the chain
 and a call to C<dispatch> the last, yours will be in between.
 
-  $app->hook(around_dispatch => sub {
-    my ($next, $c) = @_;
-    ...
-    $next->();
-    ...
-  });
+  $app->hook(
+    around_dispatch => sub {
+      my ($next, $c) = @_;
+      ...
+      $next->();
+      ...
+    });
 
 This is a very powerful hook and should not be used lightly, it allows you to
 customize application wide exception handling for example, consider it the

@@ -36,8 +36,7 @@ websocket '/test' => sub {
     message => sub {
       my ($self, $msg) = @_;
       $self->send("${msg}test2");
-    }
-  );
+    });
 };
 
 # HTTP server for testing
@@ -95,35 +94,29 @@ Mojo::IOLoop->server(
                     $read += length $chunk;
                     $sent += length $chunk;
                     Mojo::IOLoop->stream($client)->write($chunk);
-                  }
-                );
+                  });
 
                 # Server closed connection
                 $stream->on(
                   close => sub {
                     Mojo::IOLoop->remove($client);
                     delete $buffer{$client};
-                  }
-                );
-              }
-            );
+                  });
+              });
           }
         }
 
         # Invalid request from client
         else { Mojo::IOLoop->remove($client) }
-      }
-    );
+      });
 
     # Client closed connection
     $stream->on(
       close => sub {
         my $buffer = delete $buffer{$client};
         Mojo::IOLoop->remove($buffer->{connection}) if $buffer->{connection};
-      }
-    );
-  }
-);
+      });
+  });
 
 # GET / (normal request)
 my $result;
@@ -131,8 +124,7 @@ $ua->get(
   "http://localhost:$port/" => sub {
     $result = pop->success->body;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $result, "Hello World! / http://localhost:$port/", 'right content';
 
@@ -147,11 +139,9 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->finish;
-      }
-    );
+      });
     $tx->send('test1');
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $result, 'test1test2', 'right result';
 
@@ -165,8 +155,7 @@ $ua->get(
     $kept_alive = $tx->kept_alive;
     $result     = $tx->success->body;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok !$kept_alive, 'connection was not kept alive';
 is $result, 'http://kraih.com/proxy', 'right content';
@@ -183,11 +172,9 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->finish;
-      }
-    );
+      });
     $tx->send('test1');
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok $kept_alive, 'connection was kept alive';
 is $result, 'test1test2', 'right result';
@@ -204,11 +191,9 @@ $ua->websocket(
         my ($tx, $msg) = @_;
         $result = $msg;
         $tx->finish;
-      }
-    );
+      });
     $tx->send('test1');
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $connected, "localhost:$port", 'connected';
 is $result,    'test1test2',      'right result';
@@ -225,8 +210,7 @@ $ua->websocket(
     $success = $tx->success;
     $err     = $tx->error;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok !$success, 'no success';
 is $err, 'Proxy connection failed', 'right message';

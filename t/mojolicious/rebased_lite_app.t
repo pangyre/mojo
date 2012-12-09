@@ -15,16 +15,14 @@ use Test::Mojo;
 app->hook(
   before_dispatch => sub {
     shift->req->url->base(Mojo::URL->new('http://kraih.com/rebased/'));
-  }
-);
+  });
 
 # Current route hook
 app->hook(
   after_dispatch => sub {
     my $self = shift;
     $self->res->headers->header('X-Route' => $self->current_route);
-  }
-);
+  });
 
 # GET /
 get '/' => 'root';

@@ -13,24 +13,21 @@ sub startup {
     '/' => sub {
       my $self = shift;
       $self->render(text => $self->config->{works});
-    }
-  );
+    });
 
   # GET /test
   $r->get(
     '/test' => sub {
       my $self = shift;
       $self->render(text => $self->config->{whatever});
-    }
-  );
+    });
 
   # GET /secondary
   $r->get(
     '/secondary' => sub {
       my $self = shift;
       $self->render(text => ++$self->session->{secondary});
-    }
-  );
+    });
 }
 
 1;

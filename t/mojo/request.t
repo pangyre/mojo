@@ -288,8 +288,7 @@ is $req->headers->content_length, undef,        'no "Content-Length" value';
       my ($mem, $file) = @_;
       $upgrade = $file->is_file;
       $size    = $file->size;
-    }
-  );
+    });
   is $req->content->asset->max_memory_size, 12, 'right size';
   is $req->content->progress, 0, 'right progress';
   $req->parse('GET /foo/bar/baz.html?fo');
@@ -515,8 +514,7 @@ $req->on(
   progress => sub {
     my $self = shift;
     $progress ||= $self->url->path if $self->content->is_parsing_body;
-  }
-);
+  });
 $req->body(sub { $buffer .= shift->url->query->param('foo') . shift });
 $req->on(finish => sub { $finish .= shift->url->fragment });
 $req->parse("POST /foo/bar/baz.html?foo=13#23 HTTP/1.1\x0d\x0a");
@@ -768,12 +766,9 @@ $req->content->on(
           part => sub {
             my ($multi, $part) = @_;
             $part->asset->max_memory_size(5);
-          }
-        );
-      }
-    );
-  }
-);
+          });
+      });
+  });
 $req->parse("GET /foo/bar/baz.html?foo13#23 HTTP/1.1\x0d\x0a");
 $req->parse("Content-Length: 418\x0d\x0a");
 $req->parse('Content-Type: multipart/form-data; bo');
@@ -835,16 +830,11 @@ $req->content->on(
                   read => sub {
                     my ($part, $chunk) = @_;
                     $stream .= $chunk;
-                  }
-                );
-              }
-            );
-          }
-        );
-      }
-    );
-  }
-);
+                  });
+              });
+          });
+      });
+  });
 $req->parse("GET /foo/bar/baz.html?foo13#23 HTTP/1.1\x0d\x0a");
 $req->parse("Content-Length: 418\x0d\x0a");
 $req->parse('Content-Type: multipart/form-data; bo');
@@ -1106,8 +1096,7 @@ $req->on(
     my ($req, $part, $offset) = @_;
     $state = $part;
     $progress += $offset;
-  }
-);
+  });
 $req->method('get');
 $req->url->parse('http://127.0.0.1/foo/bar');
 $req->headers->expect('100-continue');
@@ -1517,10 +1506,8 @@ $req->write_chunk(
       "hello world2!\n\n" => sub {
         my $self = shift;
         $self->write_chunk('');
-      }
-    );
-  }
-);
+      });
+  });
 is $req->clone, undef, 'dynamic requests cannot be cloned';
 $req = Mojo::Message::Request->new->parse($req->to_string);
 ok $req->is_finished, 'request is finished';

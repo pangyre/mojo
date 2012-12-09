@@ -34,8 +34,7 @@ sub run {
       SUBMIT_pause99_add_uri_httpupload => ' Upload this file from my disk ',
       pause99_add_uri_uri               => '',
       pause99_add_uri_httpupload        => {file => $file},
-    }
-  );
+    });
 
   # Error
   unless ($tx->success) {

@@ -78,8 +78,7 @@ app->routes->add_condition(
       Mojo::Message::Response->new(code => 201)->body('Conditional response!')
     );
     $c->rendered and return undef;
-  }
-);
+  });
 
 # GET /
 get '/' => sub { shift->render_text('works') };

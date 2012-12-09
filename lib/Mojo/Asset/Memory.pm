@@ -77,17 +77,19 @@ L<Mojo::Asset::Memory> can emit the following events.
 
 =head2 C<upgrade>
 
-  $mem->on(upgrade => sub {
-    my ($mem, $file) = @_;
-    ...
-  });
+  $mem->on(
+    upgrade => sub {
+      my ($mem, $file) = @_;
+      ...
+    });
 
 Emitted when asset gets upgraded to a L<Mojo::Asset::File> object.
 
-  $mem->on(upgrade => sub {
-    my ($mem, $file) = @_;
-    $file->tmpdir('/tmp');
-  });
+  $mem->on(
+    upgrade => sub {
+      my ($mem, $file) = @_;
+      $file->tmpdir('/tmp');
+    });
 
 =head1 ATTRIBUTES
 

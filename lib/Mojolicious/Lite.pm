@@ -820,10 +820,11 @@ WebSocket applications have never been this easy before.
 
   websocket '/echo' => sub {
     my $self = shift;
-    $self->on(message => sub {
-      my ($self, $msg) = @_;
-      $self->send("echo: $msg");
-    });
+    $self->on(
+      message => sub {
+        my ($self, $msg) = @_;
+        $self->send("echo: $msg");
+      });
   };
 
   app->start;
@@ -911,11 +912,12 @@ For more control the L<Mojolicious> object can be accessed directly.
   use Mojolicious::Lite;
 
   app->log->level('error');
-  app->routes->get('/foo/:bar' => sub {
-    my $self = shift;
-    $self->app->log->debug('Got a request for "Hello Mojo!".');
-    $self->render(text => 'Hello Mojo!');
-  });
+  app->routes->get(
+    '/foo/:bar' => sub {
+      my $self = shift;
+      $self->app->log->debug('Got a request for "Hello Mojo!".');
+      $self->render(text => 'Hello Mojo!');
+    });
 
   app->start;
 

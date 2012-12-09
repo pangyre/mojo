@@ -63,8 +63,7 @@ $delay->steps(
   sub {
     my ($delay, @numbers) = @_;
     $result = \@numbers;
-  }
-);
+  });
 is_deeply [$delay->wait], [2, 3, 2, 1, 4], 'right numbers';
 is $finished, 1, 'finish event has been emitted once';
 is_deeply $result, [2, 3, 2, 1, 4], 'right numbers';
@@ -76,8 +75,7 @@ $delay->on(
   finish => sub {
     my ($delay, @numbers) = @_;
     $result = \@numbers;
-  }
-);
+  });
 $delay->steps(
   sub {
     my $delay = shift;
@@ -88,8 +86,7 @@ $delay->steps(
     my ($delay, @numbers) = @_;
     my $cb = $delay->begin;
     Mojo::IOLoop->timer(0 => sub { $cb->(undef, @numbers, 4) });
-  }
-);
+  });
 is_deeply [$delay->wait], [2, 3, 4], 'right numbers';
 is_deeply $result, [2, 3, 4], 'right numbers';
 
@@ -119,8 +116,7 @@ $delay = Mojo::IOLoop->delay(
   sub {
     my ($first, @numbers) = @_;
     push @$result, @numbers;
-  }
-);
+  });
 is_deeply [$delay->wait], [2, 3, 2, 1, 4, 5, 6], 'right numbers';
 is $finished, 1, 'finish event has been emitted once';
 is_deeply $result, [1, 2, 3, 2, 3, 2, 1, 4, 5, 6], 'right numbers';

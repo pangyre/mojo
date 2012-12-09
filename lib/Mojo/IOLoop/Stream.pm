@@ -115,8 +115,7 @@ sub _startup {
     0.5 => sub {
       return unless my $t = $self->timeout;
       $self->emit_safe('timeout')->close if (time - $self->{active}) >= $t;
-    }
-  );
+    });
 
   # Start streaming
   $reactor->io($self->{handle}, sub { pop() ? $self->_write : $self->_read });
@@ -168,18 +167,21 @@ Mojo::IOLoop::Stream - Non-blocking I/O stream
 
   # Create stream
   my $stream = Mojo::IOLoop::Stream->new($handle);
-  $stream->on(read => sub {
-    my ($stream, $chunk) = @_;
-    ...
-  });
-  $stream->on(close => sub {
-    my $stream = shift;
-    ...
-  });
-  $stream->on(error => sub {
-    my ($stream, $err) = @_;
-    ...
-  });
+  $stream->on(
+    read => sub {
+      my ($stream, $chunk) = @_;
+      ...
+    });
+  $stream->on(
+    close => sub {
+      my $stream = shift;
+      ...
+    });
+  $stream->on(
+    error => sub {
+      my ($stream, $err) = @_;
+      ...
+    });
 
   # Start and stop watching for new data
   $stream->start;
@@ -199,56 +201,62 @@ L<Mojo::IOLoop::Stream> can emit the following events.
 
 =head2 C<close>
 
-  $stream->on(close => sub {
-    my $stream = shift;
-    ...
-  });
+  $stream->on(
+    close => sub {
+      my $stream = shift;
+      ...
+    });
 
 Emitted safely if the stream gets closed.
 
 =head2 C<drain>
 
-  $stream->on(drain => sub {
-    my $stream = shift;
-    ...
-  });
+  $stream->on(
+    drain => sub {
+      my $stream = shift;
+      ...
+    });
 
 Emitted safely once all data has been written.
 
 =head2 C<error>
 
-  $stream->on(error => sub {
-    my ($stream, $err) = @_;
-    ...
-  });
+  $stream->on(
+    error => sub {
+      my ($stream, $err) = @_;
+      ...
+    });
 
 Emitted safely if an error occurs on the stream.
 
 =head2 C<read>
 
-  $stream->on(read => sub {
-    my ($stream, $chunk) = @_;
-    ...
-  });
+  $stream->on(
+    read => sub {
+      my ($stream, $chunk) = @_;
+      ...
+    });
 
 Emitted safely if new data arrives on the stream.
 
 =head2 C<timeout>
 
-  $stream->on(timeout => sub {
-    my $stream = shift;
-    ...
-  });
+  $stream->on(
+    timeout => sub {
+      my $stream = shift;
+      ...
+    });
 
 Emitted safely if the stream has been inactive for too long and will get
 closed automatically.
 
 =head2 C<write>
 
-  $stream->on(write => sub {
-    my ($stream, $chunk) = @_;
-    ...
-  });
+  $stream->on(
+    write => sub {
+      my ($stream, $chunk) = @_;
+      ...
+    });
 
 Emitted safely if new data has been written to the stream.
 

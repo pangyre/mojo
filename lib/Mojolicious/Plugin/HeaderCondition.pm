@@ -53,10 +53,11 @@ Mojolicious::Plugin::HeaderCondition - Header condition plugin
   get '/' => (headers => {Referer => qr/example\.com/}) => sub {...};
 
   # All headers need to match
-  $self->routes->get('/:controller/:action')->over(headers => {
-    'X-Secret-Header' => 'Foo',
-    Referer => qr/example\.com/
-  });
+  $self->routes->get('/:controller/:action')->over(
+    headers => {
+      'X-Secret-Header' => 'Foo',
+      Referer => qr/example\.com/
+    });
 
   # The "agent" condition is a shortcut for the "User-Agent" header
   get '/' => (agent => qr/Firefox/) => sub {...};

@@ -150,8 +150,7 @@ $ua->get(
     $code    = $tx->res->code;
     $body    = $tx->res->body;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok $success, 'successful';
 is $code,    200, 'right status';
@@ -201,8 +200,7 @@ $ua->once(
     $tx->req->on(finish => sub { $finished_req++ });
     $tx->on(finish => sub { $finished_tx++ });
     $tx->res->on(finish => sub { $finished_res++ });
-  }
-);
+  });
 $tx = $ua->start($tx);
 ok $tx->success, 'successful';
 is $finished_req, 1, 'finish event has been emitted once';
@@ -224,8 +222,7 @@ $ua->once(
     $tx->req->on(finish => sub { $finished_req++ });
     $tx->on(finish => sub { $finished_tx++ });
     $tx->res->on(finish => sub { $finished_res++ });
-  }
-);
+  });
 $tx = $ua->start($tx);
 ok $tx->success, 'successful';
 is $finished_req, 1, 'finish event has been emitted once';
@@ -264,8 +261,7 @@ $ua->post_form(
     $code    = $tx->res->code;
     $body    = $tx->res->body;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok $success, 'successful';
 is $code,    200, 'right status';
@@ -280,8 +276,7 @@ $ua->post_json(
     $code    = $tx->res->code;
     $body    = $tx->res->body;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 ok $success, 'successful';
 is $code,    200, 'right status';
@@ -305,10 +300,8 @@ $ua->once(
       connection => sub {
         my ($tx, $connection) = @_;
         Mojo::IOLoop->stream($connection)->timeout(0.25);
-      }
-    );
-  }
-);
+      });
+  });
 $tx = $ua->get('/timeout?timeout=5');
 ok !$tx->success, 'not successful';
 is $tx->error, 'Inactivity timeout', 'right error';
@@ -318,8 +311,7 @@ $ua->once(
   start => sub {
     my ($ua, $tx) = @_;
     $tx->res->max_message_size(12);
-  }
-);
+  });
 $tx = $ua->get('/echo' => 'Hello World!');
 ok !$tx->success, 'not successful';
 is(($tx->error)[0], 'Maximum message size exceeded', 'right error');
@@ -344,24 +336,19 @@ my $start = $ua->on(
           read => sub {
             my ($stream, $chunk) = @_;
             $res .= $chunk;
-          }
-        );
+          });
         my $write = $stream->on(
           write => sub {
             my ($stream, $chunk) = @_;
             $req .= $chunk;
-          }
-        );
+          });
         $tx->on(
           finish => sub {
             $stream->unsubscribe(read  => $read);
             $stream->unsubscribe(write => $write);
-          }
-        );
-      }
-    );
-  }
-);
+          });
+      });
+  });
 $tx = $ua->get('/', 'whatever');
 ok $tx->success, 'successful';
 is $tx->res->code, 200,      'right status';
@@ -387,8 +374,7 @@ $drain = sub {
       $tx->resume;
       $stream
         += @{Mojo::IOLoop->stream($tx->connection)->subscribers('drain')};
-    }
-  ) if $i >= 10;
+    }) if $i >= 10;
   $req->write_chunk($i++, $drain);
   $tx->resume;
   return unless my $id = $tx->connection;
@@ -419,12 +405,9 @@ $ua->get(
             my ($self, $tx) = @_;
             push @kept_alive, $tx->kept_alive;
             Mojo::IOLoop->stop;
-          }
-        );
-      }
-    );
-  }
-);
+          });
+      });
+  });
 Mojo::IOLoop->start;
 is_deeply \@kept_alive, [undef, 1, 1], 'connections kept alive';
 
@@ -439,12 +422,9 @@ $ua->get(
           '/' => sub {
             push @kept_alive, pop->kept_alive;
             Mojo::IOLoop->timer(0 => sub { Mojo::IOLoop->stop });
-          }
-        );
-      }
-    );
-  }
-);
+          });
+      });
+  });
 Mojo::IOLoop->start;
 is_deeply \@kept_alive, [1, 1], 'connections kept alive';
 
@@ -470,10 +450,8 @@ Mojo::IOLoop->server(
             . "HTTP/1.1 200 OK\x0d\x0a"
             . "Content-Length: 3\x0d\x0a\x0d\x0a" . 'Hi!')
           if $req->parse($chunk)->is_finished;
-      }
-    );
-  }
-);
+      });
+  });
 $tx = $ua->build_tx(GET => "http://localhost:$port/");
 my @unexpected;
 $tx->on(unexpected => sub { push @unexpected, pop });

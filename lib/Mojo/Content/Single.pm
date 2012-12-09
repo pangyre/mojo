@@ -85,18 +85,20 @@ emit the following new ones.
 
 =head2 C<upgrade>
 
-  $single->on(upgrade => sub {
-    my ($single, $multi) = @_;
-    ...
-  });
+  $single->on(
+    upgrade => sub {
+      my ($single, $multi) = @_;
+      ...
+    });
 
 Emitted when content gets upgraded to a L<Mojo::Content::MultiPart> object.
 
-  $single->on(upgrade => sub {
-    my ($single, $multi) = @_;
-    return unless $multi->headers->content_type =~ /multipart\/([^;]+)/i;
-    say "Multipart: $1";
-  });
+  $single->on(
+    upgrade => sub {
+      my ($single, $multi) = @_;
+      return unless $multi->headers->content_type =~ /multipart\/([^;]+)/i;
+      say "Multipart: $1";
+    });
 
 =head1 ATTRIBUTES
 

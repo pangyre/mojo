@@ -109,8 +109,7 @@ get '/multi/:bar' => sub {
   my ($foo, $bar, $baz) = $self->param([qw(foo bar baz)]);
   $self->render(
     data => join('', map { $_ // '' } $foo, $bar, $baz),
-    test => $self->param(['yada'])
-  );
+    test => $self->param(['yada']));
 };
 
 # GET /reserved
@@ -278,8 +277,7 @@ get '/foo_wildcard_too/*test' => sub {
 # GET /with/header/condition
 get '/with/header/condition' => (
   headers => {'X-Secret-Header'  => 'bar'},
-  headers => {'X-Another-Header' => 'baz'}
-) => 'with_header_condition';
+  headers => {'X-Another-Header' => 'baz'}) => 'with_header_condition';
 
 # POST /with/header/condition
 post '/with/header/condition' => sub {
@@ -296,8 +294,7 @@ get '/session_cookie' => sub {
       path  => '/session_cookie',
       name  => 'session',
       value => '23'
-    )
-  );
+    ));
 };
 
 # GET /session_cookie/2
@@ -407,8 +404,7 @@ get '/subrequest_non_blocking' => sub {
       my $tx = pop;
       $self->render_text($tx->res->body . $self->stash->{nb});
       $nb = $self->stash->{nb};
-    }
-  );
+    });
   $self->stash->{nb} = 'success!';
 };
 
@@ -440,8 +436,7 @@ get '/redirect_callback' => sub {
       $self->res->code(301);
       $self->res->body('Whatever!');
       $self->redirect_to('http://127.0.0.1/foo');
-    }
-  );
+    });
 };
 
 # GET /static_render
@@ -468,8 +463,7 @@ app->routes->add_condition(
     $captures->{test} = $captures->{text} . "$num works!";
     return 1 if $c->stash->{default} == $num;
     return undef;
-  }
-);
+  });
 
 # GET /default/condition
 get '/default/:text' => (default => 23) => sub {
@@ -487,8 +481,7 @@ app->routes->add_condition(
     $c->redirect_to('index') and return undef
       unless $c->req->headers->header('X-Condition-Test');
     return 1;
-  }
-);
+  });
 
 # GET /redirect/condition/0
 get '/redirect/condition/0' => (redirect => 0) => sub {

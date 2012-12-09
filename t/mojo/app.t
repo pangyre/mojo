@@ -80,8 +80,7 @@ $app->routes->post(
       $self->write_chunk($chunk, $cb);
     };
     $self->$cb();
-  }
-);
+  });
 
 # POST /upload
 my ($local_address, $local_port, $remote_address, $remote_port);
@@ -93,8 +92,7 @@ $app->routes->post(
     $remote_address = $self->tx->remote_address;
     $remote_port    = $self->tx->remote_port;
     $self->render_data($self->req->upload('file')->slurp);
-  }
-);
+  });
 
 # /*
 $app->routes->any('/*whatever' => {text => 'Your Mojo is working!'});
@@ -112,14 +110,12 @@ $id = Mojo::IOLoop->client(
         $buffer .= $chunk;
         Mojo::IOLoop->remove($id) and Mojo::IOLoop->stop
           if $buffer =~ s/ is working!.*is working!$//gs;
-      }
-    );
+      });
     $stream->write("GET /pipeline1/ HTTP/1.1\x0d\x0a"
         . "Content-Length: 0\x0d\x0a\x0d\x0a"
         . "GET /pipeline2/ HTTP/1.1\x0d\x0a"
         . "Content-Length: 0\x0d\x0a\x0d\x0a");
-  }
-);
+  });
 Mojo::IOLoop->start;
 like $buffer, qr/Mojo$/, 'transactions were pipelined';
 

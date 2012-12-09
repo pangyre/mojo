@@ -112,10 +112,8 @@ sub run {
 
           # Chunk
           $selector ? ($buffer .= pop) : print(pop);
-        }
-      );
-    }
-  );
+        });
+    });
 
   # Get
   STDOUT->autoflush(1);

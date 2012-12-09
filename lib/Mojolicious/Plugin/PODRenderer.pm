@@ -25,8 +25,7 @@ sub register {
       return undef unless $handler->($renderer, $c, $output, $options);
       $$output = _pod_to_html($$output);
       return 1;
-    }
-  );
+    });
 
   # Add "pod_to_html" helper
   $app->helper(pod_to_html => sub { shift; b(_pod_to_html(@_)) });
@@ -61,8 +60,7 @@ sub _perldoc {
       my $attrs = shift->attrs;
       $attrs->{href} =~ s!%3A%3A!/!gi
         if $attrs->{href} =~ s!^http://search\.cpan\.org/perldoc\?!$perldoc!;
-    }
-  );
+    });
 
   # Rewrite code blocks for syntax highlighting
   $dom->find('pre')->each(
@@ -72,8 +70,7 @@ sub _perldoc {
       my $attrs = $e->attrs;
       my $class = $attrs->{class};
       $attrs->{class} = defined $class ? "$class prettyprint" : 'prettyprint';
-    }
-  );
+    });
 
   # Rewrite headers
   my $url = $self->req->url->clone;
@@ -98,10 +95,8 @@ sub _perldoc {
           $text => $url->fragment('toc')->to_abs,
           class => 'mojoscroll',
           id    => $anchor
-        )
-      );
-    }
-  );
+        ));
+    });
 
   # Try to find a title
   my $title = 'Perldoc';

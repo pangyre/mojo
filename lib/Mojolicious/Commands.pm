@@ -44,8 +44,7 @@ BEGIN {
   GetOptions(
     'h|help'   => sub { $ENV{MOJO_HELP} = 1 },
     'home=s'   => sub { $ENV{MOJO_HOME} = $_[1] },
-    'm|mode=s' => sub { $ENV{MOJO_MODE} = $_[1] }
-  ) unless __PACKAGE__->detect;
+    'm|mode=s' => sub { $ENV{MOJO_MODE} = $_[1] }) unless __PACKAGE__->detect;
 }
 
 sub run {

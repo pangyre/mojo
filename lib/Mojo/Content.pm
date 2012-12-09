@@ -366,46 +366,52 @@ L<Mojo::Content> can emit the following events.
 
 =head2 C<body>
 
-  $content->on(body => sub {
-    my $content = shift;
-    ...
-  });
+  $content->on(
+    body => sub {
+      my $content = shift;
+      ...
+    });
 
 Emitted once all headers have been parsed and the body starts.
 
-  $content->on(body => sub {
-    my $content = shift;
-    $content->auto_upgrade(0) if $content->headers->header('X-No-MultiPart');
-  });
+  $content->on(
+    body => sub {
+      my $content = shift;
+      $content->auto_upgrade(0) if $content->headers->header('X-No-MultiPart');
+    });
 
 =head2 C<drain>
 
-  $content->on(drain => sub {
-    my ($content, $offset) = @_;
-    ...
-  });
+  $content->on(
+    drain => sub {
+      my ($content, $offset) = @_;
+      ...
+    });
 
 Emitted once all data has been written.
 
-  $content->on(drain => sub {
-    my $content = shift;
-    $content->write_chunk(time);
-  });
+  $content->on(
+    drain => sub {
+      my $content = shift;
+      $content->write_chunk(time);
+    });
 
 =head2 C<read>
 
-  $content->on(read => sub {
-    my ($content, $chunk) = @_;
-    ...
-  });
+  $content->on(
+    read => sub {
+      my ($content, $chunk) = @_;
+      ...
+    });
 
 Emitted when a new chunk of content arrives.
 
   $content->unsubscribe('read');
-  $content->on(read => sub {
-    my ($content, $chunk) = @_;
-    say "Streaming: $chunk";
-  });
+  $content->on(
+    read => sub {
+      my ($content, $chunk) = @_;
+      say "Streaming: $chunk";
+    });
 
 =head1 ATTRIBUTES
 

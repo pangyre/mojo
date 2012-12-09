@@ -23,8 +23,7 @@ $e->on(
   test2 => sub {
     my ($self, $msg) = @_;
     die "test2: $msg\n";
-  }
-);
+  });
 my $cb = sub { $echo .= 'echo2: ' . pop };
 $e->on(test2 => $cb);
 $e->emit_safe('test2', 'works!');
@@ -67,8 +66,7 @@ is $once, 1, 'event was not emitted again';
 $e->once(
   one_time => sub {
     shift->once(one_time => sub { $once++ });
-  }
-);
+  });
 $e->emit('one_time');
 is $once, 1, 'event was emitted once';
 $e->emit('one_time');
@@ -86,10 +84,8 @@ $e->once(
     shift->once(
       one_time => sub {
         shift->once(one_time => sub { $once++ });
-      }
-    );
-  }
-);
+      });
+  });
 is scalar @{$e->subscribers('one_time')}, 1, 'one subscriber';
 $e->emit('one_time');
 is $once, 0, 'only first event was emitted';

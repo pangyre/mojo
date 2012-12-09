@@ -72,8 +72,7 @@ is_deeply $tx->req->json, {test => 123}, 'right content';
 # JSON POST with custom content type
 $tx = $t->json(
   'http://kraih.com/foo' => [1, 2, 3],
-  {DNT => 1, 'content-type' => 'application/something'}
-);
+  {DNT => 1, 'content-type' => 'application/something'});
 is $tx->req->url->to_abs, 'http://kraih.com/foo', 'right URL';
 is $tx->req->method, 'POST', 'right method';
 is $tx->req->headers->dnt, 1, 'right "DNT" value';
@@ -118,8 +117,7 @@ is $tx->req->body, 'test=123', 'right content';
 # Multipart form
 $tx = $t->form(
   'http://kraih.com/foo' => {test => 123},
-  {'Content-Type' => 'multipart/form-data'}
-);
+  {'Content-Type' => 'multipart/form-data'});
 is $tx->req->url->to_abs, 'http://kraih.com/foo', 'right URL';
 is $tx->req->method, 'POST', 'right method';
 is $tx->req->headers->content_type, 'multipart/form-data',
@@ -132,8 +130,7 @@ is $tx->req->content->parts->[1], undef, 'no more parts';
 # Multipart form with multiple values
 $tx = $t->form(
   'http://kraih.com/foo' => {test => [1, 2, 3]},
-  {'Content-Type' => 'multipart/form-data'}
-);
+  {'Content-Type' => 'multipart/form-data'});
 is $tx->req->url->to_abs, 'http://kraih.com/foo', 'right URL';
 is $tx->req->method, 'POST', 'right method';
 is $tx->req->headers->content_type, 'multipart/form-data',
@@ -424,8 +421,7 @@ $tx = $t->tx(
     Cookie  => 'one',
     Host    => 'two',
     Referer => 'three'
-  }
-);
+  });
 $tx->res->code(303);
 $tx->res->headers->location('http://kraih.com/bar');
 is $tx->req->headers->accept,   'application/json', 'right "Accept" value';
@@ -530,8 +526,7 @@ $tx = $t->tx(
     Cookie  => 'one',
     Host    => 'two',
     Referer => 'three'
-  }
-);
+  });
 $tx->res->code(307);
 $tx->res->headers->location('http://kraih.com/bar');
 is $tx->req->headers->accept,   'application/json', 'right "Accept" value';

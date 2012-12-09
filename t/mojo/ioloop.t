@@ -34,8 +34,7 @@ Mojo::IOLoop->timer(
     eval { Mojo::IOLoop->start };
     $err = $@;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->start;
 like $err, qr/^Mojo::IOLoop already running/, 'right error';
 
@@ -46,8 +45,7 @@ $loop->timer(
   1 => sub {
     shift->timer(0 => sub { shift->stop });
     $timer++;
-  }
-);
+  });
 $loop->timer(0.25 => sub { $hirestimer++ });
 $loop->start;
 ok $timer,      'recursive timer works';
@@ -85,8 +83,7 @@ $id = Mojo::IOLoop->server(
     my ($loop, $stream) = @_;
     $handle = $stream->handle;
     Mojo::IOLoop->stop;
-  }
-);
+  });
 Mojo::IOLoop->acceptor($id)->on(accept => sub { $handle2 = pop });
 $id2
   = Mojo::IOLoop->client((address => 'localhost', port => $port) => sub { });
@@ -115,10 +112,8 @@ Mojo::IOLoop->server(
         $buffer .= $chunk;
         return unless $buffer eq 'acceptedhello';
         $stream->write('wo')->write('')->write('rld' => sub { shift->close });
-      }
-    );
-  }
-);
+      });
+  });
 my $delay = Mojo::IOLoop->delay;
 $delay->begin;
 Mojo::IOLoop->client(
@@ -127,8 +122,7 @@ Mojo::IOLoop->client(
     $delay->end($stream);
     $stream->on(close => sub { $buffer .= 'should not happen' });
     $stream->on(error => sub { $buffer .= 'should not happen either' });
-  }
-);
+  });
 $handle = $delay->wait->steal_handle;
 my $stream = Mojo::IOLoop::Stream->new($handle);
 $id = Mojo::IOLoop->stream($stream);
@@ -152,8 +146,7 @@ $loop->client(
     $loop->remove($id);
     $loop->stop;
     $connected = 1;
-  }
-);
+  });
 like $ENV{MOJO_REUSE}, qr/(?:^|\,)${port}:/, 'file descriptor can be reused';
 $loop->start;
 unlike $ENV{MOJO_REUSE}, qr/(?:^|\,)${port}:/, 'environment is clean';
@@ -163,8 +156,7 @@ $loop->client(
   (port => $port) => sub {
     shift->stop;
     $err = shift;
-  }
-);
+  });
 $loop->start;
 ok $err, 'has error';
 
@@ -177,16 +169,14 @@ Mojo::IOLoop->server(
   (address => '127.0.0.1', port => $port) => sub {
     my ($loop, $stream) = @_;
     $stream->on(close => sub { $delay->end });
-  }
-);
+  });
 $delay->begin;
 $id = Mojo::IOLoop->client(
   (port => $port) => sub {
     my ($loop, $err, $stream) = @_;
     $stream->on(close => sub { $delay->end });
     $loop->remove($id);
-  }
-);
+  });
 $delay->wait;
 is $removed, 1, 'connection has been removed';
 
@@ -210,15 +200,11 @@ Mojo::IOLoop->server(
                 $client_after = $client;
                 $stream->start;
                 Mojo::IOLoop->timer(0.5 => sub { Mojo::IOLoop->stop });
-              }
-            );
-          }
-        ) unless $server;
+              });
+          }) unless $server;
         $server .= $chunk;
-      }
-    );
-  }
-);
+      });
+  });
 Mojo::IOLoop->client(
   {port => $port} => sub {
     my ($loop, $err, $stream) = @_;
@@ -226,8 +212,7 @@ Mojo::IOLoop->client(
     $drain = sub { shift->write('1', $drain) };
     $stream->$drain();
     $stream->on(read => sub { $client .= pop });
-  }
-);
+  });
 Mojo::IOLoop->start;
 is $server_before, $server_after, 'stream has been paused';
 ok length($server) > length($server_after), 'stream has been resumed';

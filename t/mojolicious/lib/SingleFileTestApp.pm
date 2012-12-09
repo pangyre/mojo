@@ -25,8 +25,7 @@ sub startup {
     cb => sub {
       my $self = shift;
       $self->render(text => $self->some_plugin);
-    }
-  );
+    });
 
   # /*/* - the default route
   $self->routes->route('/:controller/:action')->to(action => 'index');

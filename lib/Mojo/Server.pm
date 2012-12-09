@@ -84,21 +84,23 @@ L<Mojo::Server> can emit the following events.
 
 =head2 C<request>
 
-  $server->on(request => sub {
-    my ($server, $tx) = @_;
-    ...
-  });
+  $server->on(
+    request => sub {
+      my ($server, $tx) = @_;
+      ...
+    });
 
 Emitted when a request is ready and needs to be handled.
 
   $server->unsubscribe('request');
-  $server->on(request => sub {
-    my ($server, $tx) = @_;
-    $tx->res->code(200);
-    $tx->res->headers->content_type('text/plain');
-    $tx->res->body('Hello World!');
-    $tx->resume;
-  });
+  $server->on(
+    request => sub {
+      my ($server, $tx) = @_;
+      $tx->res->code(200);
+      $tx->res->headers->content_type('text/plain');
+      $tx->res->body('Hello World!');
+      $tx->resume;
+    });
 
 =head1 ATTRIBUTES
 

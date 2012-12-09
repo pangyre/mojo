@@ -62,8 +62,7 @@ sub _timer {
     $after => ($recurring ? $after : 0) => sub {
       $self->_sandbox("Timer $id", $self->{timers}{$id}{cb});
       delete $self->{timers}{$id} unless $recurring;
-    }
-  );
+    });
 
   return $id;
 }
@@ -80,20 +79,22 @@ Mojo::Reactor::EV - Low level event reactor with libev support
 
   # Watch if handle becomes readable or writable
   my $reactor = Mojo::Reactor::EV->new;
-  $reactor->io($handle => sub {
-    my ($reactor, $writable) = @_;
-    say $writable ? 'Handle is writable' : 'Handle is readable';
-  });
+  $reactor->io(
+    $handle => sub {
+      my ($reactor, $writable) = @_;
+      say $writable ? 'Handle is writable' : 'Handle is readable';
+    });
 
   # Change to watching only if handle becomes writable
   $reactor->watch($handle, 0, 1);
 
   # Add a timer
-  $reactor->timer(15 => sub {
-    my $reactor = shift;
-    $reactor->remove($handle);
-    say 'Timeout!';
-  });
+  $reactor->timer(
+    15 => sub {
+      my $reactor = shift;
+      $reactor->remove($handle);
+      say 'Timeout!';
+    });
 
   # Start reactor if necessary
   $reactor->start unless $reactor->is_running;

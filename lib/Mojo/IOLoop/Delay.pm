@@ -68,10 +68,11 @@ Mojo::IOLoop::Delay - Control the flow of events
   $delay->on(finish => sub { say 'BOOM!' });
   for my $i (1 .. 10) {
     $delay->begin;
-    Mojo::IOLoop->timer($i => sub {
-      say 10 - $i;
-      $delay->end;
-    });
+    Mojo::IOLoop->timer(
+      $i => sub {
+        say 10 - $i;
+        $delay->end;
+      });
   }
 
   # Sequentialize multiple events
@@ -113,10 +114,11 @@ L<Mojo::IOLoop::Delay> can emit the following events.
 
 =head2 C<finish>
 
-  $delay->on(finish => sub {
-    my ($delay, @args) = @_;
-    ...
-  });
+  $delay->on(
+    finish => sub {
+      my ($delay, @args) = @_;
+      ...
+    });
 
 Emitted once the active event counter reaches zero and there are no more
 steps.
@@ -174,10 +176,11 @@ Start C<ioloop> and stop it again once the C<finish> event gets emitted, only
 works when C<ioloop> is not running already.
 
   # Use the "finish" event to synchronize portably
-  $delay->on(finish => sub {
-    my ($delay, @args) = @_;
-    ...
-  });
+  $delay->on(
+    finish => sub {
+      my ($delay, @args) = @_;
+      ...
+    });
   $delay->wait unless $delay->ioloop->is_running;
 
 =head1 SEE ALSO

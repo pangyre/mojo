@@ -13,7 +13,9 @@ has timeout => 15;
 
 sub DESTROY { shift->close }
 
-sub new { shift->SUPER::new(handle => shift, buffer => '') }
+sub new {
+  shift->SUPER::new(handle => shift, buffer => '', active => steady_time);
+}
 
 sub close {
   my $self = shift;
@@ -100,7 +102,6 @@ sub _startup {
 
   # Timeout (ignore 0 timeout)
   my $reactor = $self->reactor;
-  $self->{active} = steady_time;
   weaken $self;
   $self->{timer} = $reactor->recurring(
     0.5 => sub {

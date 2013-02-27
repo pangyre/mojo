@@ -1,5 +1,7 @@
 
-3.88  2013-02-26
+3.88  2013-02-27
+  - Added monotonic clock support to Mojo::IOLoop through EV.
+  - Added steady_time function to Mojo::Util.
   - Improved documentation.
   - Improved tests.
   - Fixed small domain detection bug in Mojo::UserAgent::CookieJar.

@@ -8,6 +8,10 @@ use Encode 'find_encoding';
 use File::Basename 'dirname';
 use File::Spec::Functions 'catfile';
 use MIME::Base64 qw(decode_base64 encode_base64);
+use Time::HiRes ();
+
+# Check for monotonic clock support
+use constant MONOTONIC => eval 'use EV 4.0; 1';
 
 # Punycode bootstring parameters
 use constant {
@@ -45,11 +49,16 @@ our @EXPORT_OK = (
   qw(decode deprecated encode get_line hmac_md5_sum hmac_sha1_sum),
   qw(html_unescape md5_bytes md5_sum monkey_patch punycode_decode),
   qw(punycode_encode quote secure_compare sha1_bytes sha1_sum slurp spurt),
-  qw(squish trim unquote url_escape url_unescape xml_escape xor_encode)
+  qw(squish steady_time trim unquote url_escape url_unescape xml_escape),
+  qw(xor_encode)
 );
 
 # DEPRECATED in Rainbow!
 push @EXPORT_OK, 'html_escape';
+
+# Fall back to high resolution time if monotonic clock is not available
+monkey_patch(__PACKAGE__, 'steady_time',
+  MONOTONIC ? \&EV::time : \&Time::HiRes::time);
 
 sub b64_decode { decode_base64($_[0]) }
 
@@ -606,6 +615,12 @@ Write all data at once to file.
 
 Trim whitespace characters from both ends of string and then change all
 consecutive groups of whitespace into one space each.
+
+=head2 steady_time
+
+  my $time = steady_time;
+
+High resolution time, monotonic if possible.
 
 =head2 trim
 

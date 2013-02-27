@@ -4,6 +4,7 @@ use Mojo::Base 'Mojo::EventEmitter';
 use Carp 'croak';
 use IO::Poll qw(POLLERR POLLHUP POLLIN);
 use Mojo::Loader;
+use Time::HiRes ();
 
 sub detect {
   my $try = $ENV{MOJO_REACTOR} || 'Mojo::Reactor::EV';
@@ -30,8 +31,11 @@ sub recurring  { croak 'Method "recurring" not implemented by subclass' }
 sub remove     { croak 'Method "remove" not implemented by subclass' }
 sub start      { croak 'Method "start" not implemented by subclass' }
 sub stop       { croak 'Method "stop" not implemented by subclass' }
-sub timer      { croak 'Method "timer" not implemented by subclass' }
-sub watch      { croak 'Method "watch" not implemented by subclass' }
+
+sub time {Time::HiRes::time}
+
+sub timer { croak 'Method "timer" not implemented by subclass' }
+sub watch { croak 'Method "watch" not implemented by subclass' }
 
 1;
 
@@ -163,6 +167,12 @@ being watched anymore. Meant to be overloaded in a subclass.
   $reactor->stop;
 
 Stop watching for I/O and timer events. Meant to be overloaded in a subclass.
+
+=head2 time
+
+  my $time = $reactor->time;
+
+High resolution time.
 
 =head2 timer
 

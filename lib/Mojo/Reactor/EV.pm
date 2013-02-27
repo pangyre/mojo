@@ -23,6 +23,8 @@ sub start {EV::run}
 
 sub stop { EV::break(EV::BREAK_ALL) }
 
+sub time {EV::time}
+
 sub timer { shift->_timer(0, @_) }
 
 sub watch {
@@ -149,6 +151,12 @@ called or no events are being watched anymore.
   $reactor->stop;
 
 Stop watching for I/O and timer events.
+
+=head2 time
+
+  my $time = $reactor->time;
+
+Monotonic high resolution time.
 
 =head2 timer
 

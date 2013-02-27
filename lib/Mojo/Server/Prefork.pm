@@ -70,7 +70,7 @@ sub run {
   local $SIG{TTOU} = sub {
     $self->workers($self->workers - 1) if $self->workers > 0;
     return unless $self->workers;
-    $self->{pool}{shuffle keys %{$self->{pool}}}{graceful} ||= time;
+    $self->{pool}{shuffle keys %{$self->{pool}}}{graceful} ||= $self->_time;
   };
 
   # Preload application and start accepting connections
@@ -89,7 +89,8 @@ sub _heartbeat {
   return unless $self->{reader}->sysread(my $chunk, 4194304);
 
   # Update heartbeats
-  $self->{pool}{$1} and $self->emit(heartbeat => $1)->{pool}{$1}{time} = time
+  $self->{pool}{$1}
+    and $self->emit(heartbeat => $1)->{pool}{$1}{time} = $self->_time
     while $chunk =~ /(\d+)\n/g;
 }
 
@@ -113,17 +114,19 @@ sub _manage {
     # No heartbeat (graceful stop)
     my $interval = $self->heartbeat_interval;
     my $timeout  = $self->heartbeat_timeout;
-    if (!$w->{graceful} && ($w->{time} + $interval + $timeout <= time)) {
+    if (!$w->{graceful} && ($w->{time} + $interval + $timeout <= $self->_time))
+    {
       $log->info("Worker $pid has no heartbeat, restarting.");
-      $w->{graceful} = time;
+      $w->{graceful} = $self->_time;
     }
 
     # Graceful stop with timeout
-    $w->{graceful} ||= time if $self->{graceful};
+    $w->{graceful} ||= $self->_time if $self->{graceful};
     if ($w->{graceful}) {
       $log->debug("Trying to stop worker $pid gracefully.");
       kill 'QUIT', $pid;
-      $w->{force} = 1 if $w->{graceful} + $self->graceful_timeout <= time;
+      $w->{force} = 1
+        if $w->{graceful} + $self->graceful_timeout <= $self->_time;
     }
 
     # Normal stop
@@ -161,7 +164,8 @@ sub _spawn {
 
   # Manager
   die "Can't fork: $!" unless defined(my $pid = fork);
-  return $self->emit(spawn => $pid)->{pool}{$pid} = {time => time} if $pid;
+  return $self->emit(spawn => $pid)->{pool}{$pid} = {time => $self->_time}
+    if $pid;
 
   # Prepare lock file
   my $file = $self->{lock_file};
@@ -218,6 +222,8 @@ sub _term {
   $self->emit(finish => $graceful)->{finished} = 1;
   $self->{graceful} = 1 if $graceful;
 }
+
+sub _time { shift->ioloop->reactor->time }
 
 1;
 

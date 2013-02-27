@@ -3,7 +3,6 @@ use Mojo::Base 'Mojo::EventEmitter';
 
 use Errno qw(EAGAIN ECONNRESET EINTR EPIPE EWOULDBLOCK);
 use Scalar::Util 'weaken';
-use Time::HiRes 'time';
 
 has reactor => sub {
   require Mojo::IOLoop;
@@ -13,7 +12,7 @@ has timeout => 15;
 
 sub DESTROY { shift->close }
 
-sub new { shift->SUPER::new(handle => shift, buffer => '', active => time) }
+sub new { shift->SUPER::new(handle => shift, buffer => '') }
 
 sub close {
   my $self = shift;
@@ -31,9 +30,10 @@ sub close {
 sub handle { shift->{handle} }
 
 sub is_readable {
-  my $self = shift;
-  $self->{active} = time;
-  return $self->{handle} && $self->reactor->is_readable($self->{handle});
+  my $self    = shift;
+  my $reactor = $self->reactor;
+  $self->{active} = $reactor->time;
+  return $self->{handle} && $reactor->is_readable($self->{handle});
 }
 
 sub is_writing {
@@ -92,7 +92,7 @@ sub _read {
   # EOF
   return $self->close if $read == 0;
 
-  $self->emit_safe(read => $buffer)->{active} = time;
+  $self->emit_safe(read => $buffer)->{active} = $self->reactor->time;
 }
 
 sub _startup {
@@ -100,11 +100,13 @@ sub _startup {
 
   # Timeout (ignore 0 timeout)
   my $reactor = $self->reactor;
+  $self->{active} = $reactor->time;
   weaken $self;
   $self->{timer} = $reactor->recurring(
     0.5 => sub {
       return unless my $t = $self->timeout;
-      $self->emit_safe('timeout')->close if (time - $self->{active}) >= $t;
+      $self->emit_safe('timeout')->close
+        if ($self->reactor->time - $self->{active}) >= $t;
     }
   );
 
@@ -130,7 +132,7 @@ sub _write {
     }
 
     $self->emit_safe(write => substr($self->{buffer}, 0, $written, ''));
-    $self->{active} = time;
+    $self->{active} = $self->reactor->time;
   }
 
   $self->emit_safe('drain') if !length $self->{buffer};

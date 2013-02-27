@@ -62,7 +62,8 @@ sub run {
   }
 
   # Start accepting connections
-  local $SIG{USR2} = sub { $self->{upgrade} ||= time };
+  local $SIG{USR2}
+    = sub { $self->{upgrade} ||= $prefork->ioloop->reactor->time };
   $prefork->run;
 }
 
@@ -123,7 +124,8 @@ sub _manage {
 
     # Timeout
     kill 'KILL', $self->{new}
-      if $self->{upgrade} + $self->{upgrade_timeout} <= time;
+      if $self->{upgrade} + $self->{upgrade_timeout}
+      <= $self->{prefork}->ioloop->reactor->time;
   }
 }
 
